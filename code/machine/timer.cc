@@ -25,8 +25,8 @@
 
 // dummy function because C++ does not allow pointers to member functions
 static void TimerHandler(int arg) {
-  Timer *p = (Timer *)arg;
-  p->TimerExpired();
+	Timer *p = (Timer *)arg;
+	p->TimerExpired();
 }
 
 //----------------------------------------------------------------------
@@ -44,12 +44,13 @@ static void TimerHandler(int arg) {
 //----------------------------------------------------------------------
 
 Timer::Timer(VoidFunctionPtr timerHandler, int callArg, bool doRandom) {
-  randomize = doRandom;
-  handler = timerHandler;
-  arg = callArg;
+	randomize = doRandom;
+	handler = timerHandler;
+	arg = callArg;
 
-  // schedule the first interrupt from the timer device
-  interrupt->Schedule(TimerHandler, (int)this, TimeOfNextInterrupt(), TimerInt);
+	// schedule the first interrupt from the timer device
+	interrupt->Schedule(TimerHandler, (int)this, TimeOfNextInterrupt(),
+			    TimerInt);
 }
 
 //----------------------------------------------------------------------
@@ -59,11 +60,12 @@ Timer::Timer(VoidFunctionPtr timerHandler, int callArg, bool doRandom) {
 //	interrupt handler.
 //----------------------------------------------------------------------
 void Timer::TimerExpired() {
-  // schedule the next timer device interrupt
-  interrupt->Schedule(TimerHandler, (int)this, TimeOfNextInterrupt(), TimerInt);
+	// schedule the next timer device interrupt
+	interrupt->Schedule(TimerHandler, (int)this, TimeOfNextInterrupt(),
+			    TimerInt);
 
-  // invoke the Nachos interrupt handler for this device
-  (*handler)(arg);
+	// invoke the Nachos interrupt handler for this device
+	(*handler)(arg);
 }
 
 //----------------------------------------------------------------------
@@ -73,8 +75,8 @@ void Timer::TimerExpired() {
 //----------------------------------------------------------------------
 
 int Timer::TimeOfNextInterrupt() {
-  if (randomize)
-    return 1 + (Random() % (TimerTicks * 2));
-  else
-    return TimerTicks;
+	if (randomize)
+		return 1 + (Random() % (TimerTicks * 2));
+	else
+		return TimerTicks;
 }

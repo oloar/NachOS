@@ -59,7 +59,7 @@ extern void DebugInit(const char *flags); // enable printing debug messages
 extern bool DebugIsEnabled(char flag); // Is this debug flag enabled?
 
 extern void DEBUG(char flag, const char *format, ...); // Print debug message
-                                                       // if flag is enabled
+						       // if flag is enabled
 
 //----------------------------------------------------------------------
 // ASSERT
@@ -70,11 +70,11 @@ extern void DEBUG(char flag, const char *format, ...); // Print debug message
 //      where the error occurred.
 //----------------------------------------------------------------------
 #define ASSERT(condition)                                                      \
-  if (!(condition)) {                                                          \
-    fprintf(stderr, "Assertion failed: line %d, file \"%s\"\n", __LINE__,      \
-            __FILE__);                                                         \
-    fflush(stderr);                                                            \
-    Abort();                                                                   \
-  }
+	if (!(condition)) {                                                    \
+		fprintf(stderr, "Assertion failed: line %d, file \"%s\"\n",    \
+			__LINE__, __FILE__);                                   \
+		fflush(stderr);                                                \
+		Abort();                                                       \
+	}
 
 #endif /* UTILITY_H */

@@ -32,11 +32,11 @@
 //----------------------------------------------------------------------
 
 Mail::Mail(PacketHeader pktH, MailHeader mailH, char *msgData) {
-  ASSERT(mailH.length <= MaxMailSize);
+	ASSERT(mailH.length <= MaxMailSize);
 
-  pktHdr = pktH;
-  mailHdr = mailH;
-  bcopy(msgData, data, mailHdr.length);
+	pktHdr = pktH;
+	mailHdr = mailH;
+	bcopy(msgData, data, mailHdr.length);
 }
 
 //----------------------------------------------------------------------
@@ -69,8 +69,8 @@ MailBox::~MailBox() { delete messages; }
 //----------------------------------------------------------------------
 
 static void PrintHeader(PacketHeader pktHdr, MailHeader mailHdr) {
-  printf("From (%d, %d) to (%d, %d) bytes %d\n", pktHdr.from, mailHdr.from,
-         pktHdr.to, mailHdr.to, mailHdr.length);
+	printf("From (%d, %d) to (%d, %d) bytes %d\n", pktHdr.from,
+	       mailHdr.from, pktHdr.to, mailHdr.to, mailHdr.length);
 }
 
 //----------------------------------------------------------------------
@@ -87,11 +87,11 @@ static void PrintHeader(PacketHeader pktHdr, MailHeader mailHdr) {
 //----------------------------------------------------------------------
 
 void MailBox::Put(PacketHeader pktHdr, MailHeader mailHdr, char *data) {
-  Mail *mail = new Mail(pktHdr, mailHdr, data);
+	Mail *mail = new Mail(pktHdr, mailHdr, data);
 
-  messages->Append((void *)mail); // put on the end of the list of
-                                  // arrived messages, and wake up
-                                  // any waiters
+	messages->Append((void *)mail); // put on the end of the list of
+					// arrived messages, and wake up
+					// any waiters
 }
 
 //----------------------------------------------------------------------
@@ -107,21 +107,21 @@ void MailBox::Put(PacketHeader pktHdr, MailHeader mailHdr, char *data) {
 //----------------------------------------------------------------------
 
 void MailBox::Get(PacketHeader *pktHdr, MailHeader *mailHdr, char *data) {
-  DEBUG('n', "Waiting for mail in mailbox\n");
-  Mail *mail = (Mail *)messages->Remove(); // remove message from list;
-                                           // will wait if list is empty
+	DEBUG('n', "Waiting for mail in mailbox\n");
+	Mail *mail = (Mail *)messages->Remove(); // remove message from list;
+						 // will wait if list is empty
 
-  *pktHdr = mail->pktHdr;
-  *mailHdr = mail->mailHdr;
-  if (DebugIsEnabled('n')) {
-    printf("Got mail from mailbox: ");
-    PrintHeader(*pktHdr, *mailHdr);
-  }
-  bcopy(mail->data, data, mail->mailHdr.length);
-  // copy the message data into
-  // the caller's buffer
-  delete mail; // we've copied out the stuff we
-               // need, we can now discard the message
+	*pktHdr = mail->pktHdr;
+	*mailHdr = mail->mailHdr;
+	if (DebugIsEnabled('n')) {
+		printf("Got mail from mailbox: ");
+		PrintHeader(*pktHdr, *mailHdr);
+	}
+	bcopy(mail->data, data, mail->mailHdr.length);
+	// copy the message data into
+	// the caller's buffer
+	delete mail; // we've copied out the stuff we
+		     // need, we can now discard the message
 }
 
 //----------------------------------------------------------------------
@@ -134,16 +134,16 @@ void MailBox::Get(PacketHeader *pktHdr, MailHeader *mailHdr, char *data) {
 //----------------------------------------------------------------------
 
 static void PostalHelper(int arg) {
-  PostOffice *po = (PostOffice *)arg;
-  po->PostalDelivery();
+	PostOffice *po = (PostOffice *)arg;
+	po->PostalDelivery();
 }
 static void ReadAvail(int arg) {
-  PostOffice *po = (PostOffice *)arg;
-  po->IncomingPacket();
+	PostOffice *po = (PostOffice *)arg;
+	po->IncomingPacket();
 }
 static void WriteDone(int arg) {
-  PostOffice *po = (PostOffice *)arg;
-  po->PacketSent();
+	PostOffice *po = (PostOffice *)arg;
+	po->PacketSent();
 }
 
 //----------------------------------------------------------------------
@@ -166,24 +166,27 @@ static void WriteDone(int arg) {
 //----------------------------------------------------------------------
 
 PostOffice::PostOffice(NetworkAddress addr, double reliability, int nBoxes) {
-  // First, initialize the synchronization with the interrupt handlers
-  messageAvailable = new Semaphore("message available", 0);
-  messageSent = new Semaphore("message sent", 0);
-  sendLock = new Lock("message send lock");
+	// First, initialize the synchronization with the interrupt handlers
+	messageAvailable = new Semaphore("message available", 0);
+	messageSent = new Semaphore("message sent", 0);
+	sendLock = new Lock("message send lock");
 
-  // Second, initialize the mailboxes
-  netAddr = addr;
-  numBoxes = nBoxes;
-  boxes = new MailBox[nBoxes];
+	// Second, initialize the mailboxes
+	netAddr = addr;
+	numBoxes = nBoxes;
+	boxes = new MailBox[nBoxes];
 
-  // Third, initialize the network; tell it which interrupt handlers to call
-  network = new Network(addr, reliability, ReadAvail, WriteDone, (int)this);
+	// Third, initialize the network; tell it which interrupt handlers to
+	// call
+	network =
+	    new Network(addr, reliability, ReadAvail, WriteDone, (int)this);
 
-  // Finally, create a thread whose sole job is to wait for incoming messages,
-  //   and put them in the right mailbox.
-  Thread *t = new Thread("postal worker");
+	// Finally, create a thread whose sole job is to wait for incoming
+	// messages,
+	//   and put them in the right mailbox.
+	Thread *t = new Thread("postal worker");
 
-  t->Fork(PostalHelper, (int)this);
+	t->Fork(PostalHelper, (int)this);
 }
 
 //----------------------------------------------------------------------
@@ -192,11 +195,11 @@ PostOffice::PostOffice(NetworkAddress addr, double reliability, int nBoxes) {
 //----------------------------------------------------------------------
 
 PostOffice::~PostOffice() {
-  delete network;
-  delete[] boxes;
-  delete messageAvailable;
-  delete messageSent;
-  delete sendLock;
+	delete network;
+	delete[] boxes;
+	delete messageAvailable;
+	delete messageSent;
+	delete sendLock;
 }
 
 //----------------------------------------------------------------------
@@ -208,28 +211,29 @@ PostOffice::~PostOffice() {
 //----------------------------------------------------------------------
 
 void PostOffice::PostalDelivery() {
-  PacketHeader pktHdr;
-  MailHeader mailHdr;
-  char *buffer = new char[MaxPacketSize];
+	PacketHeader pktHdr;
+	MailHeader mailHdr;
+	char *buffer = new char[MaxPacketSize];
 
-  for (;;) {
-    // first, wait for a message
-    messageAvailable->P();
-    pktHdr = network->Receive(buffer);
+	for (;;) {
+		// first, wait for a message
+		messageAvailable->P();
+		pktHdr = network->Receive(buffer);
 
-    mailHdr = *(MailHeader *)buffer;
-    if (DebugIsEnabled('n')) {
-      printf("Putting mail into mailbox: ");
-      PrintHeader(pktHdr, mailHdr);
-    }
+		mailHdr = *(MailHeader *)buffer;
+		if (DebugIsEnabled('n')) {
+			printf("Putting mail into mailbox: ");
+			PrintHeader(pktHdr, mailHdr);
+		}
 
-    // check that arriving message is legal!
-    ASSERT(0 <= mailHdr.to && mailHdr.to < numBoxes);
-    ASSERT(mailHdr.length <= MaxMailSize);
+		// check that arriving message is legal!
+		ASSERT(0 <= mailHdr.to && mailHdr.to < numBoxes);
+		ASSERT(mailHdr.length <= MaxMailSize);
 
-    // put into mailbox
-    boxes[mailHdr.to].Put(pktHdr, mailHdr, buffer + sizeof(MailHeader));
-  }
+		// put into mailbox
+		boxes[mailHdr.to].Put(pktHdr, mailHdr,
+				      buffer + sizeof(MailHeader));
+	}
 }
 
 //----------------------------------------------------------------------
@@ -246,34 +250,34 @@ void PostOffice::PostalDelivery() {
 //----------------------------------------------------------------------
 
 void PostOffice::Send(PacketHeader pktHdr, MailHeader mailHdr,
-                      const char *data) {
-  char *buffer = new char[MaxPacketSize]; // space to hold concatenated
-                                          // mailHdr + data
+		      const char *data) {
+	char *buffer = new char[MaxPacketSize]; // space to hold concatenated
+						// mailHdr + data
 
-  if (DebugIsEnabled('n')) {
-    printf("Post send: ");
-    PrintHeader(pktHdr, mailHdr);
-  }
-  ASSERT(mailHdr.length <= MaxMailSize);
-  ASSERT(0 <= mailHdr.to && mailHdr.to < numBoxes);
+	if (DebugIsEnabled('n')) {
+		printf("Post send: ");
+		PrintHeader(pktHdr, mailHdr);
+	}
+	ASSERT(mailHdr.length <= MaxMailSize);
+	ASSERT(0 <= mailHdr.to && mailHdr.to < numBoxes);
 
-  // fill in pktHdr, for the Network layer
-  pktHdr.from = netAddr;
-  pktHdr.length = mailHdr.length + sizeof(MailHeader);
+	// fill in pktHdr, for the Network layer
+	pktHdr.from = netAddr;
+	pktHdr.length = mailHdr.length + sizeof(MailHeader);
 
-  // concatenate MailHeader and data
-  bcopy(&mailHdr, buffer, sizeof(MailHeader));
-  bcopy(data, buffer + sizeof(MailHeader), mailHdr.length);
+	// concatenate MailHeader and data
+	bcopy(&mailHdr, buffer, sizeof(MailHeader));
+	bcopy(data, buffer + sizeof(MailHeader), mailHdr.length);
 
-  sendLock->Acquire(); // only one message can be sent
-                       // to the network at any one time
-  network->Send(pktHdr, buffer);
-  messageSent->P(); // wait for interrupt to tell us
-                    // ok to send the next message
-  sendLock->Release();
+	sendLock->Acquire(); // only one message can be sent
+			     // to the network at any one time
+	network->Send(pktHdr, buffer);
+	messageSent->P(); // wait for interrupt to tell us
+			  // ok to send the next message
+	sendLock->Release();
 
-  delete[] buffer; // we've sent the message, so
-                   // we can delete our buffer
+	delete[] buffer; // we've sent the message, so
+			 // we can delete our buffer
 }
 
 //----------------------------------------------------------------------
@@ -292,11 +296,11 @@ void PostOffice::Send(PacketHeader pktHdr, MailHeader mailHdr,
 //----------------------------------------------------------------------
 
 void PostOffice::Receive(int box, PacketHeader *pktHdr, MailHeader *mailHdr,
-                         char *data) {
-  ASSERT((box >= 0) && (box < numBoxes));
+			 char *data) {
+	ASSERT((box >= 0) && (box < numBoxes));
 
-  boxes[box].Get(pktHdr, mailHdr, data);
-  ASSERT(mailHdr->length <= MaxMailSize);
+	boxes[box].Get(pktHdr, mailHdr, data);
+	ASSERT(mailHdr->length <= MaxMailSize);
 }
 
 //----------------------------------------------------------------------

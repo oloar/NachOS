@@ -19,4 +19,4 @@
 #define off16(i) (immed(i) << 2)
 
 #define extend(i, hibitmask)                                                   \
-  (((i) & (hibitmask)) ? ((i) | (-(hibitmask))) : (i))
+	(((i) & (hibitmask)) ? ((i) | (-(hibitmask))) : (i))
