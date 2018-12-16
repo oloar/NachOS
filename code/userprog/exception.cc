@@ -24,6 +24,7 @@
 #include "copyright.h"
 #include "syscall.h"
 #include "system.h"
+#include "userconsole.h"
 
 //----------------------------------------------------------------------
 // UpdatePC : Increments the Program Counter register in order to resume
@@ -64,9 +65,25 @@ static void UpdatePC() {
 void ExceptionHandler(ExceptionType which) {
 	int type = machine->ReadRegister(2);
 
-	if ((which == SyscallException) && (type == SC_Halt)) {
-		DEBUG('a', "Shutdown, initiated by user program.\n");
-		interrupt->Halt();
+	if (which == SyscallException) {
+		switch (type) {
+			case SC_Halt: {
+				DEBUG('a', "Shutdown, initiated by user program.\n");
+				interrupt->Halt();
+				break;
+			}
+			case SC_Exit: {
+				int value = machine->ReadRegister(4);
+				printf("Exit with value %d\n", value);
+				interrupt->Halt();
+				break;
+			}
+			default: {
+				printf("Unexpected user mode exception %d %d\n", which, type);
+				ASSERT(FALSE);
+				break;
+			}
+		}
 	} else {
 		printf("Unexpected user mode exception %d %d\n", which, type);
 		ASSERT(FALSE);
