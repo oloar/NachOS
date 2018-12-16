@@ -19,6 +19,20 @@ void do_GetChar() {
 	machine->WriteRegister(2, c);
 }
 
+void do_GetString() {
+	char *buf;
+	char *addr = (char *) machine->ReadRegister(4);
+	int n = (int) machine->ReadRegister(5);
+	buf = (char *) malloc(sizeof(char) * MAX_STRING_SIZE);
+	synchconsole->SynchGetString(buf, n); // TODO : SynchGetString to return size
+	for (int i = 0; i < n; i++) {
+		if (buf[i] == '\0')
+			break;
+		machine->WriteMem((int)addr + i, 1, (int) buf[i]);
+	}
+	free(buf);
+}
+
 void do_PutInt() {
 	int n = machine->ReadRegister(4);
 	synchconsole->SynchPutInt(n);

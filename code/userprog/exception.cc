@@ -90,6 +90,10 @@ void ExceptionHandler(ExceptionType which) {
 				do_GetChar();
 				break;
 			}
+			case SC_GetString: {
+				do_GetString();
+				break;
+			}
 			case SC_PutInt: {
 				do_PutInt();
 				break;
