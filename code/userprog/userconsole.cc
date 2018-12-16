@@ -18,3 +18,14 @@ void do_GetChar() {
 	char c = synchconsole->SynchGetChar();
 	machine->WriteRegister(2, c);
 }
+
+void do_PutInt() {
+	int n = machine->ReadRegister(4);
+	synchconsole->SynchPutInt(n);
+}
+
+void do_GetInt() {
+	int n = synchconsole->SynchGetInt();
+	machine->WriteRegister(2, n);
+}
+

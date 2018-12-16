@@ -90,6 +90,14 @@ void ExceptionHandler(ExceptionType which) {
 				do_GetChar();
 				break;
 			}
+			case SC_PutInt: {
+				do_PutInt();
+				break;
+			}
+			case SC_GetInt: {
+				do_GetInt();
+				break;
+			}
 			default: {
 				printf("Unexpected user mode exception %d %d\n", which, type);
 				ASSERT(FALSE);
