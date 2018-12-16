@@ -14,3 +14,7 @@ void do_PutString() {
 	free(buf);
 }
 
+void do_GetChar() {
+	char c = synchconsole->SynchGetChar();
+	machine->WriteRegister(2, c);
+}

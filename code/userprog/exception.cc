@@ -86,6 +86,10 @@ void ExceptionHandler(ExceptionType which) {
 				do_PutString();
 				break;
 			}
+			case SC_GetChar: {
+				do_GetChar();
+				break;
+			}
 			default: {
 				printf("Unexpected user mode exception %d %d\n", which, type);
 				ASSERT(FALSE);
