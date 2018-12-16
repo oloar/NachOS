@@ -92,4 +92,6 @@ void SynchConsole::SynchGetString(char *s, int n) {
 
 	if (current == EOF)
 		s[i] = '\0';
+	else if (current == '\n')
+		s[i] = '\n';
 }
