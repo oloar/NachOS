@@ -211,3 +211,16 @@ void Machine::WriteRegister(int num, int value) {
 	// DEBUG('m', "WriteRegister %d, value %d\n", num, value);
 	registers[num] = value;
 }
+
+/* Use Nils function */
+void Machine::CopyStringFromMachine(int from, char *to, unsigned size) {
+	int ch;
+	unsigned i = 0;
+	do {
+		ASSERT(ReadMem(from + i, 1, (int *)(&ch)));
+		to[i] = (char)ch;
+		i++;
+	} while (i < size -1 && (char) ch != '\0');
+
+	to[size - 1] = '\0';
+}

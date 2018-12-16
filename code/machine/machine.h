@@ -149,6 +149,10 @@ class Machine {
 	void Debugger();  // invoke the user program debugger
 	void DumpState(); // print the user CPU and memory state
 
+	// copy a string from the machine at address from to pointer to at most
+	// size bytes and ending with a \0
+	void CopyStringFromMachine(int from, char *to, unsigned size);
+
 	// Data structures -- all of these are accessible to Nachos kernel code.
 	// "public" for convenience.
 	//
