@@ -73,9 +73,8 @@ void ExceptionHandler(ExceptionType which) {
 				break;
 			}
 			case SC_Exit: {
-				int value = machine->ReadRegister(4);
-				printf("Exit with value %d\n", value);
-				interrupt->Halt();
+				DEBUG('a', "Exit, initiated by user program.\n");
+				machine->WriteRegister(2, machine->ReadRegister(4));
 				break;
 			}
 			case SC_PutChar: {
