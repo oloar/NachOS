@@ -23,6 +23,8 @@ class SynchConsole {
 		char SynchGetChar();
 		void SynchPutString(char * s);
 		void SynchGetString(char * s, int n);
+		void SynchPutInt(const int n);
+		int SynchGetInt();
 
 	private:
 		Console * console;
