@@ -44,7 +44,7 @@ class AddrSpace {
 		unsigned int numPages; // Number of pages in the virtual
 		// address space
 
-		unsigned int GetStackAddress();
+		unsigned int GetNewStackAddress();
 
 	private:
 		TranslationEntry *pageTable; // Assume linear page table translation

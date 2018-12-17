@@ -17,8 +17,10 @@ static void StartUserThread(int data) {
 	machine->WriteRegister(NextPCReg, args->f + 4);
 	machine->WriteRegister(4, args->arg);
 
-	// Faire avec une BitMap à terme
-	machine->WriteRegister(StackReg, currentThread->space->numPages * PageSize - 16 - (currentThread->id * PageSize * 3));
+	// Notez que vous aurez à initialiser le pointeur de pile. Il vous est suggéré de le placer 2 ou 3 pages en
+	// dessous du pointeur du programme principal. Ceci est une évaluation empirique, bien sûr ! Il faudra
+	// probablement faire mieux dans un deuxième temps...
+	machine->WriteRegister(StackReg, currentThread->space->GetNewStackAddress());
 
 	machine->Run();
 }

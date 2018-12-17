@@ -201,3 +201,11 @@ void AddrSpace::InitBitMap(unsigned int size) {
 	stackSectorMap->Find(); // Mark a segment as used for the first thread
 }
 
+//----------------------------------------------------------------------
+// AddrSpace::GetNewStackAddress
+//      return an address to use as thread's stack
+//----------------------------------------------------------------------
+unsigned int AddrSpace::GetNewStackAddress() {
+	int n = stackSectorMap->Find(); // find a free segment's number
+	return gsize - 16 - (n * ThreadStackSize);
+}
