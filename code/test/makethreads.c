@@ -13,15 +13,13 @@ void func2(void * arg) {
 }
 
 int main() {
-	PutString("7");
-	PutString("6");
+	PutString("5");
 	char arg = 'A';
 	char arg2 = 'B';
-	/*int tid = */UserThreadCreate(func, (void *)&arg);
-	/*int tid2 = */UserThreadCreate(func2, (void *)&arg2);
-	// UserThreadJoin(tid);
-	// UserThreadJoin(tid2);
-	PutString("5");
+	int tid = UserThreadCreate(func, (void *)&arg);
+	int tid2 = UserThreadCreate(func2, (void *)&arg2);
+	UserThreadJoin(tid);
+	UserThreadJoin(tid2);
 	PutString("4");
 	PutString("3");
 	PutString("2");

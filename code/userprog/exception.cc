@@ -110,7 +110,7 @@ void ExceptionHandler(ExceptionType which) {
 			DEBUG('e', "UserThreadCreate, initiated by user program\n");
 			int f = machine->ReadRegister(4);
 			int arg = machine->ReadRegister(5);
-			do_UserThreadCreate(f, arg);
+			machine->WriteRegister(2, do_UserThreadCreate(f, arg));
 			break;}
 		case SC_UserThreadExit:
 			DEBUG('e', "UserThreadExit, initiated by user program\n");

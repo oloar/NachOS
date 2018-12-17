@@ -17,13 +17,15 @@
 #include "thread.h"
 #include "copyright.h"
 #include "switch.h"
-#include "synch.h"
 #include "system.h"
 
 #define STACK_FENCEPOST                                                        \
 	0xdeadbeef // this is put at the top of the
 		   // execution stack, for detecting
 		   // stack overflows
+
+static int ids = 0;
+static Lock * idsLock = new Lock("Thread IDs Lock");
 
 //----------------------------------------------------------------------
 // Thread::Thread
@@ -40,6 +42,9 @@ Thread::Thread(const char *threadName) {
 	status = JUST_CREATED;
 #ifdef USER_PROGRAM
 	space = NULL;
+	idsLock->Acquire();
+	id = ids++;
+	idsLock->Release();
 	// FBT: Need to initialize special registers of simulator to 0
 	// in particular LoadReg or it could crash when switching
 	// user threads.

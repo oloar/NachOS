@@ -116,6 +116,11 @@ AddrSpace::AddrSpace(OpenFile *executable) {
 		    &(machine->mainMemory[noffH.initData.virtualAddr]),
 		    noffH.initData.size, noffH.initData.inFileAddr);
 	}
+
+	tids = new Semaphore*[MAX_NB_THREADS];
+	tids[0] = new Semaphore("AddrSpace Semaphore (Main Thread)", 0);
+	for (i=1; i<MAX_NB_THREADS; i++)
+		tids[i] = new Semaphore("AddrSpace Semaphore", 1);
 }
 
 //----------------------------------------------------------------------

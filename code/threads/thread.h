@@ -42,6 +42,8 @@
 
 #ifdef USER_PROGRAM
 #include "addrspace.h"
+class AddrSpace; // HAPPY GCC
+class Lock; // HAPPY GCC
 #include "machine.h"
 #endif
 
@@ -71,6 +73,7 @@ extern void ThreadPrint(int arg);
 //  Some threads also belong to a user address space; threads
 //  that only run in the kernel have a NULL address space.
 
+
 class Thread {
 	private:
 		// NOTE: DO NOT CHANGE the order of these first two members.
@@ -79,6 +82,7 @@ class Thread {
 		int machineState[MachineStateSize]; // all registers except for stackTop
 
 	public:
+		int id;
 		Thread(const char *debugName); // initialize a Thread
 		~Thread();                     // deallocate a Thread
 		// NOTE -- thread being deleted
@@ -88,7 +92,7 @@ class Thread {
 		// basic thread operations
 
 		void Fork(VoidFunctionPtr func,
-				int arg); // Make thread run (*func)(arg)
+			  int arg); // Make thread run (*func)(arg)
 		void Yield();       // Relinquish the CPU if any
 		// other thread is runnable
 		void Sleep(); // Put the thread to sleep and
