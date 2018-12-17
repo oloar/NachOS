@@ -129,6 +129,7 @@ AddrSpace::AddrSpace(OpenFile *executable) {
 //----------------------------------------------------------------------
 
 AddrSpace::~AddrSpace() {
+	delete stackSectorMap;
 	// LB: Missing [] for delete
 	// delete pageTable;
 	delete[] pageTable;
