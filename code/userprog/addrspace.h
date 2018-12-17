@@ -42,9 +42,17 @@ class AddrSpace {
 
 		unsigned int numPages; // Number of pages in the virtual
 		// address space
+
+		unsigned int GetStackAddress();
+
 	private:
 		TranslationEntry *pageTable; // Assume linear page table translation
 		// for now!
+
+		unsigned int gsize; // Global size
+		BitMap *stackSectorMap;
+
+		void InitBitMap(unsigned int size);
 };
 
 #endif // ADDRSPACE_H

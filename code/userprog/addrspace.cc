@@ -74,6 +74,7 @@ AddrSpace::AddrSpace(OpenFile *executable) {
 	// to leave room for the stack
 	numPages = divRoundUp(size, PageSize);
 	size = numPages * PageSize;
+	gsize = size;
 
 	ASSERT(numPages <= NumPhysPages); // check we're not trying
 	// to run anything too big --
@@ -118,6 +119,8 @@ AddrSpace::AddrSpace(OpenFile *executable) {
 	tids[0] = new Semaphore("AddrSpace Semaphore (Main Thread)", 0);
 	for (i=1; i<MAX_NB_THREADS; i++)
 		tids[i] = new Semaphore("AddrSpace Semaphore", 1);
+
+	InitBitMap(noffH.uninitData.size + UserStackSize);
 }
 
 //----------------------------------------------------------------------
@@ -185,3 +188,15 @@ void AddrSpace::RestoreState() {
 	machine->pageTable = pageTable;
 	machine->pageTableSize = numPages;
 }
+
+//----------------------------------------------------------------------
+// AddrSpace::InitBitMap()
+//     initialize a bitmap for the AddrSpace
+// size : the available stack size
+//----------------------------------------------------------------------
+void AddrSpace::InitBitMap(unsigned int size) {
+	int nb_segments = size / ThreadStackSize;
+	stackSectorMap = new BitMap(nb_segments);
+	stackSectorMap->Find(); // Mark a segment as used for the first thread
+}
+
