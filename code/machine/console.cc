@@ -114,6 +114,7 @@ void Console::CheckCharAvail() {
 //----------------------------------------------------------------------
 
 void Console::WriteDone() {
+	DEBUG('c', "WriteDone\n");
 	putBusy = FALSE;
 	stats->numConsoleCharsWritten++;
 	(*writeHandler)(handlerArg);

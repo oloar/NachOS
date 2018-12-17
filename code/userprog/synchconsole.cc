@@ -1,120 +1,55 @@
+#include "console.h"
 #include "synchconsole.h"
 #include "copyright.h"
-#include "synch.h"
 #include "system.h"
+#include "synch.h"
 
-static Semaphore *readAvail;
-static Semaphore *writeDone;
-
+static Semaphore * readAvail;
+static Semaphore * writeDone;
 static void ReadAvail(int arg) { readAvail->V(); }
 static void WriteDone(int arg) { writeDone->V(); }
 
-char *buff_string;
-char *buff_string_int;
-
-SynchConsole::SynchConsole(char *readFile, char *writeFile) {
-	readAvail = new Semaphore("read avail", 0);
-	writeDone = new Semaphore("write done", 0);
-	console = new Console(readFile, writeFile, ReadAvail, WriteDone, 0);
+SynchConsole::SynchConsole(char * in, char * out) {
+	readAvail = new Semaphore("Semaphore Read Available", 0);
+	writeDone = new Semaphore("Semaphore Write Done", 0);
+	console = new Console(in, out, ReadAvail, WriteDone, 0);
+	lock = new Lock("SynchConsole Lock");
 }
 
 SynchConsole::~SynchConsole() {
 	delete console;
-	delete writeDone;
+	delete lock;
 	delete readAvail;
-}
-
-void SynchConsole::SynchPutChar(const char ch) {
-	console->PutChar(ch);
-	writeDone->P();
+	delete writeDone;
 }
 
 char SynchConsole::SynchGetChar() {
+	lock->Acquire();
 	readAvail->P();
-	return console->GetChar();
+	char c = console->GetChar();
+	lock->Release();
+	return c;
 }
 
-/*
- * put an int to the console
- * @param n : int to put to console
- *
- * @author : Nils Defauw
- */
-void SynchConsole::SynchPutInt(const int n) {
-	buff_string_int = (char *)malloc(MAX_STRING_SIZE * sizeof(char));
+void SynchConsole::SynchPutChar(char c) {
+	lock->Acquire();
+	console->PutChar(c);
+	writeDone->P();
+	lock->Release();
+}
 
-	snprintf(buff_string_int, MAX_STRING_SIZE, "%d", n);
+void SynchConsole::SynchPutString(char * s) {
+	while (*s != '\0')
+		SynchPutChar(*s++);
+	SynchPutChar('\n');
+}
 
-	int i = 0;
-
-	while (buff_string_int[i] != '\0') {
-		SynchPutChar(buff_string_int[i]);
-		i++;
+void SynchConsole::SynchGetString(char * s, int n) {
+	int i;
+	for (i = 0; i<n; i++) {
+		char c = SynchGetChar();
+		if (c == EOF || c == '\n') break;
+		s[i] = c;
 	}
-
-	free(buff_string_int);
-}
-
-/*
- * read an int from the console
- * @return : the read int
- *
- * @author : Nils Defauw
- */
-int SynchConsole::SynchGetInt() {
-	int n;
-	int i = 0;
-
-	buff_string_int = (char *)malloc(MAX_STRING_SIZE * sizeof(char));
-
-	do {
-		buff_string_int[i] = SynchGetChar();
-		i++;
-	} while (buff_string_int[i - 1] != EOF && buff_string_int[i - 1] != '\n' &&
-			i < n - 1);
-
-	if (buff_string_int[i - 1] == EOF)
-		buff_string_int[i - 1] = '\0';
-	else
-		buff_string_int[i] = '\0';
-
-	sscanf(buff_string_int, "%d", &n);
-
-	free(buff_string_int);
-
-	return n;
-}
-
-/*
- * put a string to the console.
- * @param s : string to put to the console
- *
- * @author : Gaëtan Sorin
- */
-void SynchConsole::SynchPutString(const char s[]) {
-	int i = 0;
-	while (s[i] != '\0') {
-		SynchPutChar(s[i]);
-		i++;
-	}
-}
-
-/*
- * read a string from console
- * @param s : pointer where to store the string
- * @param n : size to read
- */
-void SynchConsole::SynchGetString(char *s, int n) {
-	int i = 0;
-	char current = SynchGetChar();
-	while (current != EOF && current != '\n' && i < n) {
-		s[i] = current;
-		current = SynchGetChar();
-		i++;
-	}
-
-	if (current == EOF)
-		s[i] = '\0';
-	else if (current == '\n')
-		s[i] = '\n';
+	s[i] = '\0';
 }

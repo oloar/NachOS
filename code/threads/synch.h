@@ -78,8 +78,8 @@ class Lock {
 				      // Condition variable ops below.
 
       private:
-	const char *name; // for debugging
-			  // plus some other stuff you'll need to define
+	const char *name;
+	Semaphore * semaphore;
 };
 
 // The following class defines a "condition variable".  A condition

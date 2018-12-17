@@ -68,65 +68,64 @@ void ExceptionHandler(ExceptionType which) {
 
 	if (which == SyscallException) {
 		switch (type) {
-			case SC_Halt: {
-				DEBUG('a', "Shutdown, initiated by user program.\n");
-				interrupt->Halt();
-				break;
-			}
-			case SC_Exit: {
-				/*
-				 * Copy the return value of the program to reg2
-				 * @author : Vincent Pinet
-				 */
-				DEBUG('a', "Exit, initiated by user program.\n");
-				machine->WriteRegister(2, machine->ReadRegister(4));
-				break;
-			}
-			case SC_PutChar: {
-				do_PutChar();
-				break;
-			}
-			case SC_PutString: {
-				do_PutString();
-				break;
-			}
-			case SC_GetChar: {
-				do_GetChar();
-				break;
-			}
-			case SC_GetString: {
-				do_GetString();
-				break;
-			}
-			case SC_PutInt: {
-				do_PutInt();
-				break;
-			}
-			case SC_GetInt: {
-				do_GetInt();
-				break;
-			}
-			case SC_UserThreadCreate:{
-				/*
-				 * @author : Vincent Pinet
-				 */
-				int f = machine->ReadRegister(4);
-				int arg = machine->ReadRegister(5);
-				printf("-SYSCALL USERTHREAD CREATE\n");
-				do_UserThreadCreate(f, arg);
-				break;
-			}
-			case SC_UserThreadExit:{
-				printf("-SYSCALL USERTHREAD EXIT\n");
-				do_UserThreadExit();
-				break;
-			}
-			default:
-				printf("Unexpected user mode exception %d %d\n", which, type);
-				ASSERT(FALSE);
-			}
+		case SC_Halt: {
+			DEBUG('a', "Shutdown, initiated by user program.\n");
+			interrupt->Halt();
+			break;
+		}
+		case SC_Exit: {
+			/*
+			 * Copy the return value of the program to reg2
+			 * @author : Vincent Pinet
+			 */
+			DEBUG('a', "Exit, initiated by user program.\n");
+			machine->WriteRegister(2, machine->ReadRegister(4));
+			break;
+		}
+		case SC_PutChar: {
+			do_PutChar();
+			break;
+		}
+		case SC_PutString: {
+			do_PutString();
+			break;
+		}
+		case SC_GetChar: {
+			do_GetChar();
+			break;
+		}
+		case SC_GetString: {
+			do_GetString();
+			break;
+		}
+		case SC_PutInt: {
+			do_PutInt();
+			break;
+		}
+		case SC_GetInt: {
+			do_GetInt();
+			break;
+		}
+		case SC_UserThreadCreate:{
+			DEBUG('e', "UserThreadCreate, initiated by user program\n");
+			int f = machine->ReadRegister(4);
+			int arg = machine->ReadRegister(5);
+			do_UserThreadCreate(f, arg);
+			break;}
+		case SC_UserThreadExit:
+			DEBUG('e', "UserThreadExit, initiated by user program\n");
+			do_UserThreadExit();
+			break;
+		case SC_UserThreadJoin:
+			DEBUG('e', "UserThreadJoin, initiated by user program\n");
+			do_UserThreadJoin(machine->ReadRegister(4));
+			break;
+		default:
+			printf("Unexpected user MODE exception %d %d\n", which, type);
+			ASSERT(FALSE);
+		}
 	} else {
-		printf("Unexpected user mode exception %d %d\n", which, type);
+		printf("Unexpected user exception TYPE %d %d\n", which, type);
 		ASSERT(FALSE);
 	}
 
