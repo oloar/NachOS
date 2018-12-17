@@ -212,7 +212,15 @@ void Machine::WriteRegister(int num, int value) {
 	registers[num] = value;
 }
 
-/* Use Nils function */
+/**
+ * copy a string from the machine
+ * @param from : string address
+ * @param to : pointer to the destination
+ * @param size : string max length, will stop before if an ending character is
+ * found
+ *
+ * @author : Nils Defauw
+ */
 void Machine::CopyStringFromMachine(int from, char *to, unsigned size) {
 	int ch;
 	unsigned i = 0;

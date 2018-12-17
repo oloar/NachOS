@@ -73,6 +73,10 @@ void ExceptionHandler(ExceptionType which) {
 				break;
 			}
 			case SC_Exit: {
+				/*
+				 * Copy the return value of the program to reg2
+				 * @author : Vincent Pinet
+				 */
 				DEBUG('a', "Exit, initiated by user program.\n");
 				machine->WriteRegister(2, machine->ReadRegister(4));
 				break;

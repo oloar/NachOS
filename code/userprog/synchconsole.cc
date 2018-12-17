@@ -34,6 +34,12 @@ char SynchConsole::SynchGetChar() {
 	return console->GetChar();
 }
 
+/*
+ * put an int to the console
+ * @param n : int to put to console
+ *
+ * @author : Nils Defauw
+ */
 void SynchConsole::SynchPutInt(const int n) {
 	buff_string_int = (char *)malloc(MAX_STRING_SIZE * sizeof(char));
 
@@ -49,6 +55,12 @@ void SynchConsole::SynchPutInt(const int n) {
 	free(buff_string_int);
 }
 
+/*
+ * read an int from the console
+ * @return : the read int
+ *
+ * @author : Nils Defauw
+ */
 int SynchConsole::SynchGetInt() {
 	int n;
 	int i = 0;
@@ -73,6 +85,12 @@ int SynchConsole::SynchGetInt() {
 	return n;
 }
 
+/*
+ * put a string to the console.
+ * @param s : string to put to the console
+ *
+ * @author : Gaëtan Sorin
+ */
 void SynchConsole::SynchPutString(const char s[]) {
 	int i = 0;
 	while (s[i] != '\0') {
@@ -81,6 +99,11 @@ void SynchConsole::SynchPutString(const char s[]) {
 	}
 }
 
+/*
+ * read a string from console
+ * @param s : pointer where to store the string
+ * @param n : size to read
+ */
 void SynchConsole::SynchGetString(char *s, int n) {
 	int i = 0;
 	char current = SynchGetChar();
