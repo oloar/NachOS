@@ -109,10 +109,41 @@ void Lock::Release() {
 	semaphore->V();
 }
 
-Condition::Condition(const char *debugName) {}
+Condition::Condition(const char *debugName) {
+	name = debugName;
+	semaphore = new Semaphore("Condition Semaphore", 0);
+	lock = new Lock("Condition Lock");;
+	value = 0;
+}
 
-Condition::~Condition() {}
-void Condition::Wait(Lock *conditionLock) { ASSERT(FALSE); }
+Condition::~Condition() {
+	delete lock;
+	delete semaphore;
+}
 
-void Condition::Signal(Lock *conditionLock) {}
-void Condition::Broadcast(Lock *conditionLock) {}
+void Condition::Wait(Lock *conditionLock) {
+	lock->Acquire();
+	value++;
+	lock->Release();
+	conditionLock->Release();
+	semaphore->P();
+	conditionLock->Acquire();
+}
+
+void Condition::Signal(Lock *conditionLock) {
+	lock->Acquire();
+	if (value > 0) {
+		value--;
+		semaphore->V();
+	}
+	lock->Release();
+}
+
+void Condition::Broadcast(Lock *conditionLock) {
+	lock->Acquire();
+	while (value > 0) {
+		value--;
+		semaphore->V();
+	}
+	lock->Release();
+}

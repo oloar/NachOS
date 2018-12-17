@@ -133,5 +133,8 @@ class Condition {
 	private:
 		const char *name;
 		// plus some other stuff you'll need to define
+		Semaphore *semaphore;
+		Lock *lock;
+		int value;
 };
 #endif // SYNCH_H
