@@ -107,6 +107,9 @@ void ExceptionHandler(ExceptionType which) {
 				break;
 			}
 			case SC_UserThreadCreate:{
+				/*
+				 * @author : Vincent Pinet
+				 */
 				int f = machine->ReadRegister(4);
 				int arg = machine->ReadRegister(5);
 				printf("-SYSCALL USERTHREAD CREATE\n");
