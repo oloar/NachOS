@@ -10,9 +10,12 @@
 
 #include "addrspace.h"
 #include "console.h"
+#include "synchconsole.h"
 #include "copyright.h"
 #include "synch.h"
 #include "system.h"
+
+#define EOT 0x04
 
 //----------------------------------------------------------------------
 // StartProcess
@@ -78,4 +81,27 @@ void ConsoleTest(char *in, char *out) {
 		if (ch == 'q')
 			return; // if q, quit
 	}
+}
+
+//----------------------------------------------------------------------
+// SynchConsoleTest
+//      Test the synchconsole by echoing characters typed at the input
+//      onto the output.  Stop when the user types a 'q'.
+//
+// @author : Nils Defauw
+//----------------------------------------------------------------------
+
+void SynchConsoleTest(char *in, char *out) {
+	char ch;
+
+	delete synchconsole;
+	synchconsole = new SynchConsole(in, out);
+
+	ch = synchconsole->SynchGetChar();
+	while (ch != 'q' && ch != EOF && ch != EOT) {
+		synchconsole->SynchPutChar(ch);
+		ch = synchconsole->SynchGetChar();
+	}
+
+	fprintf(stderr, "Solaris: EOF detected in SynchConsole!\n");
 }
