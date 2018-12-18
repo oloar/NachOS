@@ -9,6 +9,19 @@ void func(void * arg) {
 void func2(void * arg) {
 	PutChar(*(char *)arg);
 	PutChar('\n');
+	PutString("5");
+	PutString("5");
+	PutString("5");
+	PutString("5");
+	PutString("5");
+	PutString("5");
+	PutString("5");
+	PutString("5");
+	PutString("5");
+	PutString("5");
+	PutString("5");
+	PutString("5");
+	PutString("5");
 	UserThreadExit();
 }
 
@@ -16,10 +29,8 @@ int main() {
 	PutString("5");
 	char arg = 'A';
 	char arg2 = 'B';
-	int tid = UserThreadCreate(func, (void *)&arg);
-	int tid2 = UserThreadCreate(func2, (void *)&arg2);
-	UserThreadJoin(tid);
-	UserThreadJoin(tid2);
+	UserThreadCreate(func, (void *)&arg);
+	UserThreadCreate(func2, (void *)&arg2);
 	PutString("4");
 	PutString("3");
 	PutString("2");

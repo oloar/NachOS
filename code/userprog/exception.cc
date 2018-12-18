@@ -70,6 +70,10 @@ void ExceptionHandler(ExceptionType which) {
 		switch (type) {
 		case SC_Halt: {
 			DEBUG('a', "Shutdown, initiated by user program.\n");
+			// Si c'est le thread "princiaple" (celui qui execute le main)
+			if (currentThread->id == 0)
+				for (int i=1; i<MAX_NB_THREADS; i++)
+					currentThread->space->tids[i]->P();
 			interrupt->Halt();
 			break;
 		}
