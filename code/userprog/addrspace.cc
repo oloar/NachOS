@@ -197,16 +197,9 @@ void AddrSpace::RestoreState() {
 //----------------------------------------------------------------------
 void AddrSpace::InitBitMap(unsigned int size , unsigned int stacksize) {
 	int nb_segments = size / stacksize;
-	DEBUG('t', "!!!!! %d ",nb_segments);
+	DEBUG('l', "!!!!! %d \n",nb_segments);
 	stackSectorMap = new BitMap(nb_segments);
 	stackSectorMap->Find(); // Mark a segment as used for the first thread
 }
 
-//----------------------------------------------------------------------
-// AddrSpace::GetNewStackAddress
-//      return an address to use as thread's stack
-//----------------------------------------------------------------------
-unsigned int AddrSpace::GetNewStackAddress() {
-	int n = stackSectorMap->Find(); // find a free segment's number
-	return gsize - 16 - (n * ThreadStackSize);
-}
+

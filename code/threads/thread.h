@@ -83,6 +83,7 @@ class Thread {
 
 	public:
 		int id;
+		int sectorId;
 		Thread(const char *debugName); // initialize a Thread
 		~Thread();                     // deallocate a Thread
 		// NOTE -- thread being deleted

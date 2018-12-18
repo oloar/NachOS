@@ -23,8 +23,8 @@
 class Semaphore;
 #endif
 
-#define UserStackSize 1024 // increase this as necessary!
-#define ThreadStackSize 3 * PageSize // thread's stack size
+#define UserStackSize 2048 // increase this as necessary!
+#define ThreadStackSize 3* PageSize // thread's stack size
 
 class AddrSpace {
 	public:
@@ -44,14 +44,13 @@ class AddrSpace {
 		unsigned int numPages; // Number of pages in the virtual
 		// address space
 
-		unsigned int GetNewStackAddress();
+		BitMap *stackSectorMap;
 
+		unsigned int gsize; // Global size
 	private:
 		TranslationEntry *pageTable; // Assume linear page table translation
 		// for now!
 
-		unsigned int gsize; // Global size
-		BitMap *stackSectorMap;
 
 		void InitBitMap(unsigned int size, unsigned int stackSize);
 };
