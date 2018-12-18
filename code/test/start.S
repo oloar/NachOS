@@ -201,6 +201,38 @@ UserThreadJoin:
 	j	$31
 	.end UserThreadJoin
 
+	.globl UserSemCreate
+	.ent	UserSemCreate
+UserSemCreate:
+	addiu $2,$0,SC_UserSemCreate
+	syscall
+	j	$31
+	.end UserSemCreate
+
+	.globl UserSemDestroy
+	.ent	UserSemDestroy
+UserSemDestroy:
+	addiu $2,$0,SC_UserSemDestroy
+	syscall
+	j	$31
+	.end UserSemDestroy
+
+	.globl UserSemP
+	.ent	UserSemP
+UserSemP:
+	addiu $2,$0,SC_UserSemP
+	syscall
+	j	$31
+	.end UserSemP
+
+	.globl UserSemV
+	.ent	UserSemV
+UserSemV:
+	addiu $2,$0,SC_UserSemV
+	syscall
+	j	$31
+	.end UserSemV
+
 /* dummy function to keep gcc happy */
         .globl  __main
         .ent    __main

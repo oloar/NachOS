@@ -26,6 +26,7 @@
 #include "system.h"
 #include "userconsole.h"
 #include "userthread.h"
+#include "usersynch.h"
 
 //----------------------------------------------------------------------
 // UpdatePC : Increments the Program Counter register in order to resume
@@ -123,6 +124,18 @@ void ExceptionHandler(ExceptionType which) {
 		case SC_UserThreadJoin:
 			DEBUG('e', "UserThreadJoin, initiated by user program\n");
 			do_UserThreadJoin(machine->ReadRegister(4));
+			break;
+		case SC_UserSemCreate:
+			do_UserSemCreate();
+			break;
+		case SC_UserSemDestroy:
+			do_UserSemDestroy();
+			break;
+		case SC_UserSemP:
+			do_UserSemP();
+			break;
+		case SC_UserSemV:
+			do_UserSemV();
 			break;
 		default:
 			printf("Unexpected user MODE exception %d %d\n", which, type);

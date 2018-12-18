@@ -30,10 +30,17 @@ extern Statistics *stats;           // performance metrics
 extern Timer *timer;                // the hardware alarm clock
 
 #ifdef USER_PROGRAM
+#include <map>
+
 #include "machine.h"
+#include "synch.h"
 #include "synchconsole.h"
 #define MAX_STRING_SIZE 256
 #define MAX_NB_THREADS 32
+
+extern int currentSemId; // used to get unique sem id, DO NOT RESET
+extern std::map<int,Semaphore *> *semaphoreMap; // keeps track of every user semaphore
+
 extern Machine *machine; // user program memory and registers
 extern SynchConsole *synchconsole;
 #endif
