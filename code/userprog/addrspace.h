@@ -53,7 +53,7 @@ class AddrSpace {
 		unsigned int gsize; // Global size
 		BitMap *stackSectorMap;
 
-		void InitBitMap(unsigned int size);
+		void InitBitMap(unsigned int size, unsigned int stackSize);
 };
 
 #endif // ADDRSPACE_H

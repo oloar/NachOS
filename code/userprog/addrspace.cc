@@ -120,7 +120,7 @@ AddrSpace::AddrSpace(OpenFile *executable) {
 	for (i=1; i<MAX_NB_THREADS; i++)
 		tids[i] = new Semaphore("AddrSpace Semaphore", 1);
 
-	InitBitMap(noffH.uninitData.size + UserStackSize);
+	InitBitMap(noffH.uninitData.size + UserStackSize, ThreadStackSize);
 }
 
 //----------------------------------------------------------------------
@@ -195,8 +195,9 @@ void AddrSpace::RestoreState() {
 //     initialize a bitmap for the AddrSpace
 // size : the available stack size
 //----------------------------------------------------------------------
-void AddrSpace::InitBitMap(unsigned int size) {
-	int nb_segments = size / ThreadStackSize;
+void AddrSpace::InitBitMap(unsigned int size , unsigned int stacksize) {
+	int nb_segments = size / stacksize;
+	DEBUG('t', "!!!!! %d ",nb_segments);
 	stackSectorMap = new BitMap(nb_segments);
 	stackSectorMap->Find(); // Mark a segment as used for the first thread
 }
