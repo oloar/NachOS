@@ -201,6 +201,38 @@ UserThreadJoin:
 	j	$31
 	.end UserThreadJoin
 
+	.globl UserMutexCreate
+	.ent	UserMutexCreate
+UserMutexCreate:
+	addiu $2,$0,SC_UserMutexCreate
+	syscall
+	j	$31
+	.end UserMutexCreate
+
+	.globl UserMutexDestroy
+	.ent	UserMutexDestroy
+UserMutexDestroy:
+	addiu $2,$0,SC_UserMutexDestroy
+	syscall
+	j	$31
+	.end UserMutexDestroy
+
+	.globl UserMutexLock
+	.ent	UserMutexLock
+UserMutexLock:
+	addiu $2,$0,SC_UserMutexLock
+	syscall
+	j	$31
+	.end UserMutexLock
+
+	.globl UserMutexUnlock
+	.ent	UserMutexUnlock
+UserMutexUnlock:
+	addiu $2,$0,SC_UserMutexUnlock
+	syscall
+	j	$31
+	.end UserMutexUnlock
+
 	.globl UserSemCreate
 	.ent	UserSemCreate
 UserSemCreate:

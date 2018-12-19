@@ -38,10 +38,14 @@
 #define SC_UserThreadCreate 17
 #define SC_UserThreadExit 18
 #define SC_UserThreadJoin 19
-#define SC_UserSemCreate 20
-#define SC_UserSemDestroy 21
-#define SC_UserSemP 22
-#define SC_UserSemV 23
+#define SC_UserMutexCreate 20
+#define SC_UserMutexDestroy 21
+#define SC_UserMutexLock 22
+#define SC_UserMutexUnlock 23
+#define SC_UserSemCreate 24
+#define SC_UserSemDestroy 25
+#define SC_UserSemP 26
+#define SC_UserSemV 27
 
 #ifdef IN_USER_MODE
 
@@ -153,6 +157,11 @@ int UserThreadCreate(void (*f)(void *), void * arg);
 void UserThreadExit();
 
 int UserThreadJoin(int tid);
+
+int UserMutexCreate();
+int UserMutexDestroy(int id);
+int UserMutexLock(int id);
+int UserMutexUnlock(int id);
 
 int UserSemCreate();
 int UserSemDestroy(int id);

@@ -31,6 +31,9 @@ SynchDisk *synchDisk;
 Machine *machine;   // user program memory and registers
 SynchConsole *synchconsole;
 
+int currentMutexId = 0;
+std::map<int,Lock *> *lockMap;
+
 int currentSemId = 0; // used to get unique sem id, DO NOT RESET
 std::map<int,Semaphore *> *semaphoreMap; // keeps track of every user semaphore
 
@@ -150,6 +153,7 @@ void Initialize(int argc, char **argv) {
 #ifdef USER_PROGRAM
 	machine = new Machine(debugUserProg); // this must come first
 	synchconsole = new SynchConsole(NULL,NULL);
+	lockMap = new std::map<int,Lock *>();
 	semaphoreMap = new std::map<int,Semaphore *>();
 #endif
 

@@ -125,6 +125,18 @@ void ExceptionHandler(ExceptionType which) {
 			DEBUG('e', "UserThreadJoin, initiated by user program\n");
 			do_UserThreadJoin(machine->ReadRegister(4));
 			break;
+		case SC_UserMutexCreate:
+			do_UserMutexCreate();
+			break;
+		case SC_UserMutexDestroy:
+			do_UserMutexDestroy();
+			break;
+		case SC_UserMutexLock:
+			do_UserMutexLock();
+			break;
+		case SC_UserMutexUnlock:
+			do_UserMutexUnlock();
+			break;
 		case SC_UserSemCreate:
 			do_UserSemCreate();
 			break;
