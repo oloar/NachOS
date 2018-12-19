@@ -4,10 +4,11 @@
 typedef struct {
 	int f;
 	int arg;
-} duo;
+	int exit_addr;
+} thread_args;
 
 static void StartUserThread(int data) {
-	duo * args = (duo *)data;
+	thread_args * args = (thread_args *)data;
 
 	// Pas compris l'utilité mais marche sans. ???
 	// currentThread->space->RestoreState();
@@ -23,6 +24,7 @@ static void StartUserThread(int data) {
 	int stackAddr = currentThread->space->GetAddrFromId(currentThread->sectorId);
 	DEBUG('l' , "New user thread %d with stack starting at %d:%d.\n", currentThread->id, currentThread->sectorId, stackAddr);
 	machine->WriteRegister(StackReg,stackAddr);
+	machine->WriteRegister(RetAddrReg,args->exit_addr);
 
 	machine->Run();
 }
@@ -35,9 +37,10 @@ int do_UserThreadCreate(int f, int arg)  {
 	newThread->sectorId = currentThread->space->stackSectorMap->Find();
 	if (newThread->sectorId == -1) return -1;
 
-	duo * args = new duo();
+	thread_args * args = new thread_args();
 	args->f = f;
 	args->arg = arg;
+	args->exit_addr = machine->ReadRegister(6);
 
 	// Mise dans la file d'attente (Fork s'occupe de AddrSpace)
 	newThread->Fork(StartUserThread, (int)args);

@@ -3,7 +3,6 @@
 void func(void * arg) {
 	PutChar(*(char *)arg);
 	PutChar('\n');
-	UserThreadExit();
 }
 
 void func2(void * arg) {
@@ -22,7 +21,6 @@ void func2(void * arg) {
 	PutString("5");
 	PutString("5");
 	PutString("5");
-	UserThreadExit();
 }
 
 int main() {
