@@ -195,8 +195,8 @@ void AddrSpace::RestoreState() {
 //     initialize a bitmap for the AddrSpace
 // size : the available stack size
 //----------------------------------------------------------------------
-void AddrSpace::InitBitMap(unsigned int size , unsigned int stacksize) {
-	int nb_segments = size / stacksize;
+void AddrSpace::InitBitMap(unsigned int size , unsigned int sectorSize) {
+	int nb_segments = size / sectorSize;
 	DEBUG('l', "Initializing Sector Map with %d sectors.\n",nb_segments);
 	stackSectorMap = new BitMap(nb_segments);
 	stackSectorMap->Find(); // Mark a segment as used for the first thread
