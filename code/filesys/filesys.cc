@@ -343,5 +343,8 @@ bool FileSystem::Mkdir(const char *name) {
 
 	dir->WriteBack(dirfile);
 
+	delete dirfile;
+	delete dir;
+
 	return true;
 }
