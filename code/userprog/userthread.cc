@@ -20,9 +20,9 @@ static void StartUserThread(int data) {
 	// Notez que vous aurez à initialiser le pointeur de pile. Il vous est suggéré de le placer 2 ou 3 pages en
 	// dessous du pointeur du programme principal. Ceci est une évaluation empirique, bien sûr ! Il faudra
 	// probablement faire mieux dans un deuxième temps...
-	int temp = currentThread->space->gsize - 16 - (currentThread->sectorId * ThreadStackSize);;
-	DEBUG('l' , "valeur stack %d ",temp);
-	machine->WriteRegister(StackReg,temp);
+	int stackAddr = currentThread->space->gsize - 16 - (currentThread->sectorId * ThreadStackSize);;
+	DEBUG('l' , "New user thread %d with stack starting at %d:%d.\n", currentThread->id, currentThread->sectorId, stackAddr);
+	machine->WriteRegister(StackReg,stackAddr);
 
 	machine->Run();
 }
@@ -54,6 +54,7 @@ int do_UserThreadJoin(int tid) {
 }
 
 void do_UserThreadExit(void) {
+	DEBUG('l', "Exiting user threads %d with sector %d.\n", currentThread->id, currentThread->sectorId);
 	currentThread->space->tids[currentThread->id]->V();
 	currentThread->space->stackSectorMap->Clear(currentThread->sectorId);
 	currentThread->Finish();
