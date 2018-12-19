@@ -333,3 +333,15 @@ void FileSystem::Print() {
 	delete freeMap;
 	delete directory;
 }
+
+bool FileSystem::Mkdir(const char *name) {
+	if (!Create(name, DirectoryFileSize))
+		return false;
+
+	Directory *dir = new Directory(NumDirEntries);
+	OpenFile *dirfile = Open(name);
+
+	dir->WriteBack(dirfile);
+
+	return true;
+}

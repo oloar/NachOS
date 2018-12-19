@@ -67,7 +67,7 @@ class FileSystem {
 
 #else // FILESYS
 class FileSystem {
-      public:
+	public:
 	FileSystem(bool format); // Initialize the file system.
 				 // Must be called *after* "synchDisk"
 				 // has been initialized.
@@ -86,11 +86,17 @@ class FileSystem {
 
 	void Print(); // List all the files and their contents
 
-      private:
+	/** Create a new directory at the current directory.
+	 * @param name The name of the new directory, must not exist before the call
+	 * @return true if the creation succeeded, false otherwise
+	 */
+	bool Mkdir(const char *name);
+
+	private:
 	OpenFile *freeMapFile;   // Bit map of free disk blocks,
-				 // represented as a file
+	// represented as a file
 	OpenFile *directoryFile; // "Root" directory -- list of
-				 // file names, represented as a file
+	// file names, represented as a file
 };
 
 #endif // FILESYS
