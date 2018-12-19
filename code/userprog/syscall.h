@@ -140,22 +140,60 @@ void Fork(void (*func)());
  */
 void Yield();
 
+/**
+ * Put a char to the console
+ * @param c : the char
+ */
 void PutChar(char c);
 
+/*
+ * Read a char from the console
+ * @result : the char
+ */
 char GetChar();
 
+/*
+ * Write a string to the console
+ * @param s : the string to write
+ */
 void PutString(char * s);
 
+/*
+ * Read a string from the console
+ * @param s : the string
+ * @param n : max number of characters to read
+ */
 void GetString(char * s, int n);
 
+/*
+ * Write an int to the console
+ * @param n : the int
+ */
 void PutInt(int n);
 
+/*
+ * Read an int from the console
+ * @result : the int
+ */
 int GetInt();
 
+/*
+ * Create a thread running a function
+ * @param f : pointer to the function to be runned
+ * @param arg : pointer to the function's arguments
+ */
 int UserThreadCreate(void (*f)(void *), void * arg);
 
+/*
+ * Exit the current thread
+ */
 void UserThreadExit();
 
+/*
+ * Wait for a thread to finish
+ * @param tid : the thread to wait id
+ * @result : TODO
+ */
 int UserThreadJoin(int tid);
 
 int UserMutexCreate();
