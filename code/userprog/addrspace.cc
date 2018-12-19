@@ -202,4 +202,3 @@ void AddrSpace::InitBitMap(unsigned int size , unsigned int stacksize) {
 	stackSectorMap->Find(); // Mark a segment as used for the first thread
 }
 
-
