@@ -41,6 +41,7 @@
 bool FileHeader::Allocate(BitMap *freeMap, int fileSize) {
 	numBytes = fileSize;
 	numSectors = divRoundUp(fileSize, SectorSize);
+	fileType = REGULAR;
 	if (freeMap->NumClear() < numSectors)
 		return FALSE; // not enough space
 
@@ -48,6 +49,10 @@ bool FileHeader::Allocate(BitMap *freeMap, int fileSize) {
 		dataSectors[i] = freeMap->Find();
 	return TRUE;
 }
+
+void FileHeader::ChangeType(int newFileType) { fileType = newFileType; }
+
+int FileHeader::GetType() { return fileType; }
 
 //----------------------------------------------------------------------
 // FileHeader::Deallocate
@@ -117,16 +122,25 @@ void FileHeader::Print() {
 	int i, j, k;
 	char *data = new char[SectorSize];
 
-	printf("FileHeader contents.  File size: %d.  File blocks:\n",
-	       numBytes);
+	printf("File type: ");
+	switch (fileType) {
+		case REGULAR:
+			printf("regular file\n");
+			break;
+		case DIRECTORY:
+			printf("directory\n");
+			break;
+		default:
+			printf("unknown file type\n");
+	}
+	printf("FileHeader contents.  File size: %d.  File blocks:\n", numBytes);
 	for (i = 0; i < numSectors; i++)
 		printf("%d ", dataSectors[i]);
 	printf("\nFile contents:\n");
 	for (i = k = 0; i < numSectors; i++) {
 		synchDisk->ReadSector(dataSectors[i], data);
 		for (j = 0; (j < SectorSize) && (k < numBytes); j++, k++) {
-			if ('\040' <= data[j] &&
-			    data[j] <= '\176') // isprint(data[j])
+			if ('\040' <= data[j] && data[j] <= '\176') // isprint(data[j])
 				printf("%c", data[j]);
 			else
 				printf("\\%x", (unsigned char)data[j]);

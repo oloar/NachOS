@@ -59,20 +59,21 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="headertitle">
-<div class="title">FileSystem Member List</div>  </div>
+<div class="title">FileHeader Member List</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>This is the complete list of members for <a class="el" href="classFileSystem.html">FileSystem</a>, including all inherited members.</p>
+<p>This is the complete list of members for <a class="el" href="classFileHeader.html">FileHeader</a>, including all inherited members.</p>
 <table class="directory">
-  <tr class="even"><td class="entry"><a class="el" href="classFileSystem.html#ad9c21c127285b23a5a96a2b7f15966f9">Chdir</a>(const char *name)</td><td class="entry"><a class="el" href="classFileSystem.html">FileSystem</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0"><td class="entry"><b>Create</b>(const char *name, int initialSize, int fileType) (defined in <a class="el" href="classFileSystem.html">FileSystem</a>)</td><td class="entry"><a class="el" href="classFileSystem.html">FileSystem</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>FileSystem</b>(bool format) (defined in <a class="el" href="classFileSystem.html">FileSystem</a>)</td><td class="entry"><a class="el" href="classFileSystem.html">FileSystem</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0"><td class="entry"><b>List</b>() (defined in <a class="el" href="classFileSystem.html">FileSystem</a>)</td><td class="entry"><a class="el" href="classFileSystem.html">FileSystem</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classFileSystem.html#a2b62f9370687928be910036651353fd5">Mkdir</a>(const char *name)</td><td class="entry"><a class="el" href="classFileSystem.html">FileSystem</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0"><td class="entry"><b>Open</b>(const char *name) (defined in <a class="el" href="classFileSystem.html">FileSystem</a>)</td><td class="entry"><a class="el" href="classFileSystem.html">FileSystem</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>Print</b>() (defined in <a class="el" href="classFileSystem.html">FileSystem</a>)</td><td class="entry"><a class="el" href="classFileSystem.html">FileSystem</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="classFileSystem.html#a65233243bc32e0cd14ff410e45358928">Remove</a>(const char *name)</td><td class="entry"><a class="el" href="classFileSystem.html">FileSystem</a></td><td class="entry"></td></tr>
+  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>Allocate</b>(BitMap *bitMap, int fileSize) (defined in <a class="el" href="classFileHeader.html">FileHeader</a>)</td><td class="entry"><a class="el" href="classFileHeader.html">FileHeader</a></td><td class="entry"></td></tr>
+  <tr bgcolor="#f0f0f0"><td class="entry"><b>ByteToSector</b>(int offset) (defined in <a class="el" href="classFileHeader.html">FileHeader</a>)</td><td class="entry"><a class="el" href="classFileHeader.html">FileHeader</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classFileHeader.html#a43f2d5da5274babd417005121b8e71b4">ChangeType</a>(int newFileType)</td><td class="entry"><a class="el" href="classFileHeader.html">FileHeader</a></td><td class="entry"></td></tr>
+  <tr bgcolor="#f0f0f0"><td class="entry"><b>Deallocate</b>(BitMap *bitMap) (defined in <a class="el" href="classFileHeader.html">FileHeader</a>)</td><td class="entry"><a class="el" href="classFileHeader.html">FileHeader</a></td><td class="entry"></td></tr>
+  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>FetchFrom</b>(int sectorNumber) (defined in <a class="el" href="classFileHeader.html">FileHeader</a>)</td><td class="entry"><a class="el" href="classFileHeader.html">FileHeader</a></td><td class="entry"></td></tr>
+  <tr bgcolor="#f0f0f0"><td class="entry"><b>FileLength</b>() (defined in <a class="el" href="classFileHeader.html">FileHeader</a>)</td><td class="entry"><a class="el" href="classFileHeader.html">FileHeader</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classFileHeader.html#a37124b3d55ba93cbe4c7115be5adf3c4">GetType</a>()</td><td class="entry"><a class="el" href="classFileHeader.html">FileHeader</a></td><td class="entry"></td></tr>
+  <tr bgcolor="#f0f0f0"><td class="entry"><b>Print</b>() (defined in <a class="el" href="classFileHeader.html">FileHeader</a>)</td><td class="entry"><a class="el" href="classFileHeader.html">FileHeader</a></td><td class="entry"></td></tr>
+  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>WriteBack</b>(int sectorNumber) (defined in <a class="el" href="classFileHeader.html">FileHeader</a>)</td><td class="entry"><a class="el" href="classFileHeader.html">FileHeader</a></td><td class="entry"></td></tr>
 </table></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

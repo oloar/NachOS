@@ -39,70 +39,76 @@
 #include "openfile.h"
 
 #ifdef FILESYS_STUB // Temporarily implement file system calls as
-		    // calls to UNIX, until the real file system
-		    // implementation is available
+// calls to UNIX, until the real file system
+// implementation is available
 class FileSystem {
-      public:
-	FileSystem(bool format) {}
+	public:
+		FileSystem(bool format) {}
 
-	bool Create(const char *name, int initialSize) {
-		int fileDescriptor = OpenForWrite(name);
+		bool Create(const char *name, int initialSize) {
+			int fileDescriptor = OpenForWrite(name);
 
-		if (fileDescriptor == -1)
-			return FALSE;
-		Close(fileDescriptor);
-		return TRUE;
-	}
+			if (fileDescriptor == -1)
+				return FALSE;
+			Close(fileDescriptor);
+			return TRUE;
+		}
 
-	OpenFile *Open(char *name) {
-		int fileDescriptor = OpenForReadWrite(name, FALSE);
+		OpenFile *Open(char *name) {
+			int fileDescriptor = OpenForReadWrite(name, FALSE);
 
-		if (fileDescriptor == -1)
-			return NULL;
-		return new OpenFile(fileDescriptor);
-	}
+			if (fileDescriptor == -1)
+				return NULL;
+			return new OpenFile(fileDescriptor);
+		}
 
-	bool Remove(char *name) { return Unlink(name) == 0; }
+		bool Remove(char *name) { return Unlink(name) == 0; }
 };
 
 #else // FILESYS
 class FileSystem {
 	public:
-	FileSystem(bool format); // Initialize the file system.
-				 // Must be called *after* "synchDisk"
-				 // has been initialized.
-				 // If "format", there is nothing on
-				 // the disk, so initialize the directory
-				 // and the bitmap of free blocks.
+		FileSystem(bool format); // Initialize the file system.
+		// Must be called *after* "synchDisk"
+		// has been initialized.
+		// If "format", there is nothing on
+		// the disk, so initialize the directory
+		// and the bitmap of free blocks.
 
-	bool Create(const char *name, int initialSize);
-	// Create a file (UNIX creat)
+		bool Create(const char *name, int initialSize, int fileType);
+		// Create a file (UNIX creat)
 
-	OpenFile *Open(const char *name); // Open a file (UNIX open)
+		OpenFile *Open(const char *name); // Open a file (UNIX open)
 
-	bool Remove(const char *name); // Delete a file (UNIX unlink)
+		/**
+		 * Remove a file, it must be a REGULAR file that exists in the current working
+		 * directory.
+		 * @param name The name of the REGULAR file to be removed
+		 * @return TRUE if the request succeeded, FALSE otherwise
+		 */
+		bool Remove(const char *name); // Delete a file (UNIX unlink)
 
-	void List(); // List all the files in the file system
+		void List(); // List all the files in the file system
 
-	void Print(); // List all the files and their contents
+		void Print(); // List all the files and their contents
 
-	/** Create a new directory at the current directory.
-	 *  @param name The name of the new directory, must not exist before the call
-	 *  @return TRUE if the creation succeeded, FALSE otherwise
-	 */
-	bool Mkdir(const char *name);
+		/** Create a new directory at the current directory.
+		 *  @param name The name of the new directory, must not exist before the call
+		 *  @return TRUE if the creation succeeded, FALSE otherwise
+		 */
+		bool Mkdir(const char *name);
 
-	/** Change working directory
-	 *  @param name The name of the new working directory
-	 *  @return TRUE if the request succeeded, FALSE otherwise
-	 */
-	bool Chdir(const char *name);
+		/** Change working directory.
+		 *  @param name The name of the new working directory
+		 *  @return TRUE if the request succeeded, FALSE otherwise
+		 */
+		bool Chdir(const char *name);
 
 	private:
-	OpenFile *freeMapFile;   // Bit map of free disk blocks,
-	// represented as a file
-	OpenFile *directoryFile; // "current" directory -- list of
-	// file names, represented as a file
+		OpenFile *freeMapFile;   // Bit map of free disk blocks,
+		// represented as a file
+		OpenFile *directoryFile; // "current" directory -- list of
+		// file names, represented as a file
 };
 
 #endif // FILESYS

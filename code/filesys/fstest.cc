@@ -15,6 +15,7 @@
 #include "copyright.h"
 
 #include "disk.h"
+#include "filehdr.h"
 #include "filesys.h"
 #include "stats.h"
 #include "system.h"
@@ -46,9 +47,8 @@ void Copy(const char *from, const char *to) {
 	fseek(fp, 0, 0);
 
 	// Create a Nachos file of the same length
-	DEBUG('f', "Copying file %s, size %d, to file %s\n", from, fileLength,
-	      to);
-	if (!fileSystem->Create(to, fileLength)) { // Create Nachos file
+	DEBUG('f', "Copying file %s, size %d, to file %s\n", from, fileLength, to);
+	if (!fileSystem->Create(to, fileLength, REGULAR)) { // Create Nachos file
 		printf("Copy: couldn't create output file %s\n", to);
 		fclose(fp);
 		return;
@@ -114,9 +114,9 @@ static void FileWrite() {
 	OpenFile *openFile;
 	int i, numBytes;
 
-	printf("Sequential write of %d byte file, in %zd byte chunks\n",
-	       FileSize, ContentSize);
-	if (!fileSystem->Create(FileName, 0)) {
+	printf("Sequential write of %d byte file, in %zd byte chunks\n", FileSize,
+			ContentSize);
+	if (!fileSystem->Create(FileName, 0, REGULAR)) {
 		printf("Perf test: can't create %s\n", FileName);
 		return;
 	}
