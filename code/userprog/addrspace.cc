@@ -190,15 +190,19 @@ void AddrSpace::RestoreState() {
 	machine->pageTableSize = numPages;
 }
 
+/**
+ * Get the address corresponding to a sector id
+ * @param id : the sector id
+ * @result : the starting address of this sector.
+ */
 int AddrSpace::GetAddrFromId(int id) {
 	return gsize - (id * ThreadStackSize);
 }
 
-//----------------------------------------------------------------------
-// AddrSpace::InitBitMap()
-//     initialize a bitmap for the AddrSpace
-// size : the available stack size
-//----------------------------------------------------------------------
+/**
+ * initialize a bitmap for the AddrSpace
+ * @param size : the available stack size
+ */
 void AddrSpace::InitBitMap(unsigned int size , unsigned int sectorSize) {
 	int nb_segments = size / sectorSize;
 	DEBUG('l', "Initializing Sector Map with %d sectors.\n",nb_segments);
