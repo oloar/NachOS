@@ -182,6 +182,8 @@ void Cleanup() {
 
 #ifdef USER_PROGRAM
 	delete synchconsole;
+	delete semaphoreMap;
+	delete lockMap;
 	delete machine;
 #endif
 
