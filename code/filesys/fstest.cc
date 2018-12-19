@@ -173,3 +173,28 @@ void PerformanceTest() {
 	}
 	stats->Print();
 }
+
+void DirectoryTest(const char *from) {
+  printf("Creating two new directories /test1 and /test1/test2 and one file "
+         "/test1/test2/TestFile:\n");
+  fileSystem->Mkdir("test1");
+  printf("Contents of /:\n");
+  fileSystem->List();
+  fileSystem->Chdir("test1");
+  fileSystem->Mkdir("test2");
+  printf("Contents of /test1:\n");
+  fileSystem->List();
+  fileSystem->Chdir("test2");
+  Copy(from, "TestFile");
+  printf("Contents of /test1/test2:\n");
+  fileSystem->List();
+  fileSystem->Remove("TestFile");
+  fileSystem->Chdir("..");
+  printf("Contents of /test1/test2/..:\n");
+  fileSystem->List();
+  fileSystem->Remove("test2");
+  fileSystem->Chdir("..");
+  printf("Contents of /test1/test2/../..:\n");
+  fileSystem->List();
+  fileSystem->Remove("test1");
+}
