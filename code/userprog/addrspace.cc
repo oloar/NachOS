@@ -190,6 +190,10 @@ void AddrSpace::RestoreState() {
 	machine->pageTableSize = numPages;
 }
 
+int AddrSpace::GetAddrFromId(int id) {
+	return gsize - (id * ThreadStackSize);
+}
+
 //----------------------------------------------------------------------
 // AddrSpace::InitBitMap()
 //     initialize a bitmap for the AddrSpace

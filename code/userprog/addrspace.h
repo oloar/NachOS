@@ -39,6 +39,8 @@ class AddrSpace {
 		void SaveState();    // Save/restore address space-specific
 		void RestoreState(); // info on a context switch
 
+		int GetAddrFromId(int id);
+
 		Semaphore ** tids;
 
 		unsigned int numPages; // Number of pages in the virtual
