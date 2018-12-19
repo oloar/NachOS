@@ -44,6 +44,8 @@ extern std::map<int,Lock *> *lockMap;
 extern int currentSemId; // used to get unique sem id, DO NOT RESET
 extern std::map<int,Semaphore *> *semaphoreMap; // keeps track of every user semaphore
 
+extern int currentConditionId;
+extern std::map<int,Condition *> *conditionMap;
 
 extern Machine *machine; // user program memory and registers
 extern SynchConsole *synchconsole;

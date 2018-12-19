@@ -149,6 +149,21 @@ void ExceptionHandler(ExceptionType which) {
 		case SC_UserSemV:
 			do_UserSemV();
 			break;
+		case SC_UserConditionCreate:
+			do_UserConditionCreate();
+			break;
+		case SC_UserConditionDestroy:
+			do_UserConditionDestroy();
+			break;
+		case SC_UserConditionWait:
+			do_UserConditionWait();
+			break;
+		case SC_UserConditionSignal:
+			do_UserConditionSignal();
+			break;
+		case SC_UserConditionBroadcast:
+			do_UserConditionBroadcast();
+			break;
 		default:
 			printf("Unexpected user MODE exception %d %d\n", which, type);
 			ASSERT(FALSE);

@@ -266,6 +266,46 @@ UserSemV:
 	j	$31
 	.end UserSemV
 
+	.globl UserConditionCreate
+	.ent	UserConditionCreate
+UserConditionCreate:
+	addiu $2,$0,SC_UserConditionCreate
+	syscall
+	j	$31
+	.end UserConditionCreate
+
+	.globl UserConditionDestroy
+	.ent	UserConditionDestroy
+UserConditionDestroy:
+	addiu $2,$0,SC_UserConditionDestroy
+	syscall
+	j	$31
+	.end UserConditionDestroy
+
+	.globl UserConditionWait
+	.ent	UserConditionWait
+UserConditionWait:
+	addiu $2,$0,SC_UserConditionWait
+	syscall
+	j	$31
+	.end UserConditionWait
+
+	.globl UserConditionSignal
+	.ent	UserConditionSignal
+UserConditionSignal:
+	addiu $2,$0,SC_UserConditionSignal
+	syscall
+	j	$31
+	.end UserConditionSignal
+
+	.globl UserConditionBroadcast
+	.ent	UserConditionBroadcast
+UserConditionBroadcast:
+	addiu $2,$0,SC_UserConditionBroadcast
+	syscall
+	j	$31
+	.end UserConditionBroadcast
+
 /* dummy function to keep gcc happy */
         .globl  __main
         .ent    __main

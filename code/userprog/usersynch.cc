@@ -81,7 +81,7 @@ Semaphore *getSemaphoreFromMap(int id) {
 
 void do_UserSemCreate() {
 	DEBUG('s', "Semaphore created by user.\n");
-	int id,		// Sem unique id used by user
+	int id,     // Sem unique id used by user
 		value;	// Sem initiale value
 	id = currentSemId++; // Never set back to 0 to guaranty uniqueness
 	value = machine->ReadRegister(4);// Read initiale value.
@@ -120,4 +120,75 @@ void do_UserSemV() {
 		machine->WriteRegister(2, -1);
 	else
 		sem->V();
+}
+
+///////////////////////////////////////////////////////////
+// Condition
+///////////////////////////////////////////////////////////
+
+/*
+ * Search through system's condition list
+ * @param id : condition's id
+ * @result : Pointer on the condition if it existe in the map
+ * Null othrewise
+ */
+Condition *getConditionFromMap(int id) {
+	Condition *res;
+	res = conditionMap->find(id)->second;
+	if (res == conditionMap->end()->second)
+		res = NULL;
+	return res;
+}
+
+
+void do_UserConditionCreate() {
+	DEBUG('s', "Condition created by user.\n");
+	int id;                                                     // unique id used by user
+	id = currentConditionId++;                                  // Never set back to 0 to guaranty uniqueness
+	Condition *cond = new Condition("User condition");
+	conditionMap->insert(std::pair<int,Condition *>(id,cond));
+	machine->WriteRegister(2, id);
+}
+
+void do_UserConditionDestroy() {
+	DEBUG('s', "Condition destroyed by user.\n");
+	int id = machine->ReadRegister(4);
+	Condition *cond = getConditionFromMap(id);
+
+	if (cond != NULL) {                                          // if cond in map
+		delete cond;                                             // Delete it
+		conditionMap->erase(id);                                // Remove the entry from the map
+	}
+}
+
+void do_UserConditionWait() {
+	DEBUG('s', "Condition wait by user.\n");
+	int condId = machine->ReadRegister(4);
+	int mutexId = machine->ReadRegister(5);
+	Condition *cond = getConditionFromMap(condId);
+	Lock *mutex = getMutexFromMap(mutexId);
+	if (cond == NULL || mutex == NULL)
+		machine->WriteRegister(2, -1);
+	else
+		cond->Wait(mutex);
+}
+
+void do_UserConditionSignal() {
+	DEBUG('s', "Condition signal by user.\n");
+	int condId = machine->ReadRegister(4);
+	Condition *cond = getConditionFromMap(condId);
+	if (cond == NULL)
+		machine->WriteRegister(2, -1);
+	else
+		cond->Signal();
+}
+
+void do_UserConditionBroadcast() {
+	DEBUG('s', "Condition signal by user.\n");
+	int condId = machine->ReadRegister(4);
+	Condition *cond = getConditionFromMap(condId);
+	if (cond == NULL)
+		machine->WriteRegister(2, -1);
+	else
+		cond->Broadcast();
 }

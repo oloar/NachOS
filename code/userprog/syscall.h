@@ -46,6 +46,11 @@
 #define SC_UserSemDestroy 25
 #define SC_UserSemP 26
 #define SC_UserSemV 27
+#define SC_UserConditionCreate 28
+#define SC_UserConditionDestroy 29
+#define SC_UserConditionWait 30
+#define SC_UserConditionSignal 31
+#define SC_UserConditionBroadcast 32
 
 #ifdef IN_USER_MODE
 
@@ -205,6 +210,12 @@ int UserSemCreate();
 int UserSemDestroy(int id);
 int UserSemP(int id);
 int UserSemV(int id);
+
+int UserConditionCreate();
+void UserConditionDestroy(int condId);
+void UserConditionWait(int condId, int mutexId);
+void UserConditionSignal(int condId); //, int mutexId);
+void UserConditionBroadcast(int condId); // , int mutexId);
 
 #endif // IN_USER_MODE
 

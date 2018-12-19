@@ -18,4 +18,14 @@ void do_UserSemP();
 
 void do_UserSemV();
 
+void do_UserConditionCreate();
+
+void do_UserConditionDestroy();
+
+void do_UserConditionWait();
+
+void do_UserConditionSignal();
+
+void do_UserConditionBroadcast();
+
 #endif /* USERSYNCH_H */

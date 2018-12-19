@@ -37,6 +37,9 @@ std::map<int,Lock *> *lockMap;
 int currentSemId = 0; // used to get unique sem id, DO NOT RESET
 std::map<int,Semaphore *> *semaphoreMap; // keeps track of every user semaphore
 
+int currentConditionId = 0;
+std::map<int,Condition *> *conditionMap;
+
 #endif
 
 #ifdef NETWORK
@@ -155,6 +158,7 @@ void Initialize(int argc, char **argv) {
 	synchconsole = new SynchConsole(NULL,NULL);
 	lockMap = new std::map<int,Lock *>();
 	semaphoreMap = new std::map<int,Semaphore *>();
+	conditionMap = new std::map<int,Condition *>();
 #endif
 
 #ifdef FILESYS
@@ -181,9 +185,10 @@ void Cleanup() {
 #endif
 
 #ifdef USER_PROGRAM
-	delete synchconsole;
+	delete conditionMap;
 	delete semaphoreMap;
 	delete lockMap;
+	delete synchconsole;
 	delete machine;
 #endif
 
