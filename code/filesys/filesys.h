@@ -87,15 +87,21 @@ class FileSystem {
 	void Print(); // List all the files and their contents
 
 	/** Create a new directory at the current directory.
-	 * @param name The name of the new directory, must not exist before the call
-	 * @return true if the creation succeeded, false otherwise
+	 *  @param name The name of the new directory, must not exist before the call
+	 *  @return TRUE if the creation succeeded, FALSE otherwise
 	 */
 	bool Mkdir(const char *name);
+
+	/** Change working directory
+	 *  @param name The name of the new working directory
+	 *  @return TRUE if the request succeeded, FALSE otherwise
+	 */
+	bool Chdir(const char *name);
 
 	private:
 	OpenFile *freeMapFile;   // Bit map of free disk blocks,
 	// represented as a file
-	OpenFile *directoryFile; // "Root" directory -- list of
+	OpenFile *directoryFile; // "current" directory -- list of
 	// file names, represented as a file
 };
 

@@ -108,6 +108,12 @@ FileSystem::FileSystem(bool format) {
 		mapHdr->WriteBack(FreeMapSector);
 		dirHdr->WriteBack(DirectorySector);
 
+		// Add the two special directories . and .. to the root directory,
+		// note that in the special case of the root directory, .. maps to itself
+
+		directory->Add(".", DirectorySector);
+		directory->Add("..", DirectorySector);
+
 		// OK to open the bitmap and directory files now
 		// The file system operations assume these two files are left
 		// open while Nachos is running.
@@ -338,13 +344,36 @@ bool FileSystem::Mkdir(const char *name) {
 	if (!Create(name, DirectoryFileSize))
 		return false;
 
+	// Obtain the current working directory
+	Directory *wddir = new Directory(NumDirEntries);
+	wddir->FetchFrom(directoryFile);
+
 	Directory *dir = new Directory(NumDirEntries);
+
 	OpenFile *dirfile = Open(name);
+
+	// Add the two special directory entries, . and ..
+	dir->Add(".", wddir->Find(name));
+	dir->Add("..", wddir->Find("."));
 
 	dir->WriteBack(dirfile);
 
 	delete dirfile;
 	delete dir;
+	delete wddir;
+
+	return true;
+}
+
+bool FileSystem::Chdir(const char *name) {
+	OpenFile *newwdfile;
+	if ((newwdfile = Open(name)) == NULL)
+		return false;
+
+	delete directoryFile;
+
+	// Update the current directory file in filesys
+	directoryFile = newwdfile;
 
 	return true;
 }
