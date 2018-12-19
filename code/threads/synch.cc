@@ -130,7 +130,7 @@ void Condition::Wait(Lock *conditionLock) {
 	conditionLock->Acquire();
 }
 
-void Condition::Signal(Lock *conditionLock) {
+void Condition::Signal() {
 	lock->Acquire();
 	if (value > 0) {
 		value--;
@@ -139,7 +139,7 @@ void Condition::Signal(Lock *conditionLock) {
 	lock->Release();
 }
 
-void Condition::Broadcast(Lock *conditionLock) {
+void Condition::Broadcast() {
 	lock->Acquire();
 	while (value > 0) {
 		value--;

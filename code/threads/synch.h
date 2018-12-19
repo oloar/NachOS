@@ -126,8 +126,8 @@ class Condition {
 		// condition variables; releasing the
 		// lock and going to sleep are
 		// *atomic* in Wait()
-		void Signal(Lock *conditionLock);    // conditionLock must be held by
-		void Broadcast(Lock *conditionLock); // the currentThread for all of
+		void Signal();    // conditionLock must be held by
+		void Broadcast(); // the currentThread for all of
 		// these operations
 
 	private:
