@@ -43,6 +43,24 @@ static void SwapHeader(NoffHeader *noffH) {
 	noffH->uninitData.inFileAddr = WordToHost(noffH->uninitData.inFileAddr);
 }
 
+static void ReadAtVirtual(OpenFile *executable, int virtualaddr, int numBytes, int position,TranslationEntry *pageTable,unsigned numPages){
+	int  bufftemp[numBytes/4];
+	int readbyte = executable->ReadAt((char*)bufftemp,  numBytes, position);
+	int n = readbyte / 4 ;
+	int reste = readbyte %4;
+	bool b = TRUE;
+	int i = 0 ;
+	machine->pageTable = pageTable;
+	machine->pageTableSize = numPages*PageSize;
+	while( i <n && b ){
+		b = machine->WriteMem(virtualaddr,4,bufftemp[i]);
+		i+=1;
+		virtualaddr +=4;
+	}
+	if (reste > 0) {
+		machine->WriteMem(virtualaddr,reste,bufftemp[n]);
+	}
+}
 //----------------------------------------------------------------------
 // AddrSpace::AddrSpace
 //      Create an address space to run a user program.
@@ -87,7 +105,7 @@ AddrSpace::AddrSpace(OpenFile *executable) {
 	pageTable = new TranslationEntry[numPages];
 	for (i = 0; i < numPages; i++) {
 		pageTable[i].virtualPage = i; // for now, virtual page # = phys page #
-		pageTable[i].physicalPage = i;
+		pageTable[i].physicalPage = i+1;
 		pageTable[i].valid = TRUE;
 		pageTable[i].use = FALSE;
 		pageTable[i].dirty = FALSE;
@@ -103,16 +121,21 @@ AddrSpace::AddrSpace(OpenFile *executable) {
 	if (noffH.code.size > 0) {
 		DEBUG('a', "Initializing code segment, at 0x%x, size %d\n",
 		      noffH.code.virtualAddr, noffH.code.size);
-		executable->ReadAt(
+		/*executable->ReadAt(
 		    &(machine->mainMemory[noffH.code.virtualAddr]),
 		    noffH.code.size, noffH.code.inFileAddr);
+			*/
+		ReadAtVirtual(executable,noffH.code.virtualAddr,noffH.code.size,noffH.code.inFileAddr,pageTable,numPages);
 	}
 	if (noffH.initData.size > 0) {
 		DEBUG('a', "Initializing data segment, at 0x%x, size %d\n",
 		      noffH.initData.virtualAddr, noffH.initData.size);
+			  /*
 		executable->ReadAt(
 		    &(machine->mainMemory[noffH.initData.virtualAddr]),
 		    noffH.initData.size, noffH.initData.inFileAddr);
+			*/
+		ReadAtVirtual(executable,noffH.initData.virtualAddr, noffH.initData.size, noffH.initData.inFileAddr,pageTable,numPages);
 	}
 
 	tids = new Semaphore*[MAX_NB_THREADS];
@@ -209,4 +232,3 @@ void AddrSpace::InitBitMap(unsigned int size , unsigned int sectorSize) {
 	stackSectorMap = new BitMap(nb_segments);
 	stackSectorMap->Find(); // Mark a segment as used for the first thread
 }
-
