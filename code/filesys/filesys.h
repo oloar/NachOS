@@ -104,6 +104,13 @@ class FileSystem {
 		 */
 		bool Chdir(const char *name);
 
+		/**
+		 * Remove a directory, it must exist in the current working directory
+		 * @param name The name of the directory to be removed
+		 * @return TRUE if the request succeeded, FALSE otherwise
+		 */
+		bool Rmdir(const char *name);
+
 	private:
 		OpenFile *freeMapFile;   // Bit map of free disk blocks,
 		// represented as a file

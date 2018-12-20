@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['remove',['Remove',['../classFileSystem.html#a65233243bc32e0cd14ff410e45358928',1,'FileSystem']]]
+  ['nonemptyentries',['NonEmptyEntries',['../classDirectory.html#a4975306da4d2e04b54b68db6a20dd2ec',1,'Directory']]]
 ];

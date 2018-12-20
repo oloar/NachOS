@@ -73,10 +73,16 @@ class Directory {
 		      //  of the directory -- all the file
 		      //  names and their contents.
 
-      private:
+	/**
+	 * Getter for the number of entries in this directory.
+	 * @return The number of entries for this directory
+	 */
+	int NonEmptyEntries();
+
+	  private:
 	int tableSize;         // Number of directory entries
 	DirectoryEntry *table; // Table of pairs:
-			       // <file name, file header location>
+	// <file name, file header location>
 
 	int FindIndex(const char *name); // Find the index into the directory
 					 //  table corresponding to "name"

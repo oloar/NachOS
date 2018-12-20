@@ -58,7 +58,7 @@ Directory::~Directory() { delete[] table; }
 
 void Directory::FetchFrom(OpenFile *file) {
 	(void)file->ReadAt((char *)table, tableSize * sizeof(DirectoryEntry),
-			   0);
+			0);
 }
 
 //----------------------------------------------------------------------
@@ -70,7 +70,7 @@ void Directory::FetchFrom(OpenFile *file) {
 
 void Directory::WriteBack(OpenFile *file) {
 	(void)file->WriteAt((char *)table, tableSize * sizeof(DirectoryEntry),
-			    0);
+			0);
 }
 
 //----------------------------------------------------------------------
@@ -84,7 +84,7 @@ void Directory::WriteBack(OpenFile *file) {
 int Directory::FindIndex(const char *name) {
 	for (int i = 0; i < tableSize; i++)
 		if (table[i].inUse &&
-		    !strncmp(table[i].name, name, FileNameMaxLen))
+				!strncmp(table[i].name, name, FileNameMaxLen))
 			return i;
 	return -1; // name not in directory
 }
@@ -172,10 +172,20 @@ void Directory::Print() {
 	for (int i = 0; i < tableSize; i++)
 		if (table[i].inUse) {
 			printf("Name: %s, Sector: %d\n", table[i].name,
-			       table[i].sector);
+					table[i].sector);
 			hdr->FetchFrom(table[i].sector);
 			hdr->Print();
 		}
 	printf("\n");
 	delete hdr;
+}
+
+int Directory::NonEmptyEntries() {
+	int j = 0;
+
+	for (int i = 0; i < tableSize; i++)
+		if (table[i].inUse)
+			j++;
+
+	return j;
 }

@@ -192,9 +192,9 @@ void DirectoryTest(const char *from) {
   fileSystem->Chdir("..");
   printf("Contents of /test1/test2/..:\n");
   fileSystem->List();
-  fileSystem->Remove("test2");
+  fileSystem->Rmdir("test2");
   fileSystem->Chdir("..");
   printf("Contents of /test1/test2/../..:\n");
   fileSystem->List();
-  fileSystem->Remove("test1");
+  fileSystem->Rmdir("test1");
 }

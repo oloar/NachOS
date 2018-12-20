@@ -62,7 +62,7 @@ class FileHeader {
 
 	/**
 	 * Change the type (REGULAR, DIRECTORY, ...) of the header.
-	 * @param fileType The requested type for the header
+	 * @param newFileType The requested type for the header
 	 */
 	void ChangeType(int newFileType);
 
