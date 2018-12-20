@@ -35,6 +35,5 @@ int main() {
 	PutString("1");
 	PutString("0");
 	PutString("BOOM");
-	Halt();
 	return 0;
 }

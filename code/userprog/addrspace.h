@@ -24,7 +24,7 @@ class Semaphore;
 #endif
 
 #define UserStackSize 2048 // increase this as necessary!
-#define ThreadStackSize 3* PageSize // thread's stack size
+#define ThreadStackSize (3 * PageSize) // thread's stack size
 
 class AddrSpace {
 	public:
@@ -41,20 +41,16 @@ class AddrSpace {
 
 		int GetAddrFromId(int id);
 
-		Semaphore ** tids;
+		Semaphore ** threads;
+		BitMap * stackSectorMap;
 
-		unsigned int numPages; // Number of pages in the virtual
-		// address space
+		unsigned int numPages; // Number of pages in the virtual address space
 
-		BitMap *stackSectorMap;
-
-		unsigned int gsize; // Global size
+		unsigned int size; // total size
+		int userexitaddr; // MIBS address of syscall UserThreadExit
 	private:
 		TranslationEntry *pageTable; // Assume linear page table translation
 		// for now!
-
-
-		void InitBitMap(unsigned int size, unsigned int sectorSize);
 };
 
 #endif // ADDRSPACE_H

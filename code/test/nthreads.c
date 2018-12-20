@@ -16,7 +16,7 @@ int main()
 	int i = 0;
 	do {
 		tids[i] =UserThreadCreate(func, (void *)&c);
-		c++;	
+		c++;
 	} while (tids[i++] != -1);
 
 	PutString("End");

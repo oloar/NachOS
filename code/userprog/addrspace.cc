@@ -38,8 +38,7 @@ static void SwapHeader(NoffHeader *noffH) {
 	noffH->initData.virtualAddr = WordToHost(noffH->initData.virtualAddr);
 	noffH->initData.inFileAddr = WordToHost(noffH->initData.inFileAddr);
 	noffH->uninitData.size = WordToHost(noffH->uninitData.size);
-	noffH->uninitData.virtualAddr =
-	    WordToHost(noffH->uninitData.virtualAddr);
+	noffH->uninitData.virtualAddr = WordToHost(noffH->uninitData.virtualAddr);
 	noffH->uninitData.inFileAddr = WordToHost(noffH->uninitData.inFileAddr);
 }
 
@@ -60,21 +59,19 @@ static void SwapHeader(NoffHeader *noffH) {
 
 AddrSpace::AddrSpace(OpenFile *executable) {
 	NoffHeader noffH;
-	unsigned int i, size;
+	unsigned int i;
 
 	executable->ReadAt((char *)&noffH, sizeof(noffH), 0);
-	if ((noffH.noffMagic != NOFFMAGIC) &&
-	    (WordToHost(noffH.noffMagic) == NOFFMAGIC))
+	if ((noffH.noffMagic != NOFFMAGIC) && (WordToHost(noffH.noffMagic) == NOFFMAGIC))
 		SwapHeader(&noffH);
 	ASSERT(noffH.noffMagic == NOFFMAGIC);
 
 	// how big is address space?
-	size = noffH.code.size + noffH.initData.size + noffH.uninitData.size +
-	       UserStackSize; // we need to increase the size
+	size = noffH.code.size + noffH.initData.size + noffH.uninitData.size + UserStackSize;
+	// we need to increase the size
 	// to leave room for the stack
 	numPages = divRoundUp(size, PageSize);
 	size = numPages * PageSize;
-	gsize = size;
 
 	ASSERT(numPages <= NumPhysPages); // check we're not trying
 	// to run anything too big --
@@ -101,26 +98,25 @@ AddrSpace::AddrSpace(OpenFile *executable) {
 
 	// then, copy in the code and data segments into memory
 	if (noffH.code.size > 0) {
-		DEBUG('a', "Initializing code segment, at 0x%x, size %d\n",
-		      noffH.code.virtualAddr, noffH.code.size);
-		executable->ReadAt(
-		    &(machine->mainMemory[noffH.code.virtualAddr]),
-		    noffH.code.size, noffH.code.inFileAddr);
+		DEBUG('a', "Initializing code segment, at 0x%x, size %d\n", noffH.code.virtualAddr, noffH.code.size);
+		executable->ReadAt(&(machine->mainMemory[noffH.code.virtualAddr]), noffH.code.size, noffH.code.inFileAddr);
 	}
 	if (noffH.initData.size > 0) {
-		DEBUG('a', "Initializing data segment, at 0x%x, size %d\n",
-		      noffH.initData.virtualAddr, noffH.initData.size);
-		executable->ReadAt(
-		    &(machine->mainMemory[noffH.initData.virtualAddr]),
-		    noffH.initData.size, noffH.initData.inFileAddr);
+		DEBUG('a', "Initializing data segment, at 0x%x, size %d\n", noffH.initData.virtualAddr, noffH.initData.size);
+		executable->ReadAt(&(machine->mainMemory[noffH.initData.virtualAddr]), noffH.initData.size, noffH.initData.inFileAddr);
 	}
 
-	tids = new Semaphore*[MAX_NB_THREADS];
-	tids[0] = new Semaphore("AddrSpace Semaphore (Main Thread)", 0);
-	for (i=1; i<MAX_NB_THREADS; i++)
-		tids[i] = new Semaphore("AddrSpace Semaphore", 1);
+	int nb_segments = (noffH.uninitData.size + UserStackSize) / ThreadStackSize;
+	DEBUG('a', "Initializing stack sector map with %d sectors.\n", nb_segments);
+	stackSectorMap = new BitMap(nb_segments);
+	stackSectorMap->Find(); // Mark a segment as used for the main thread
 
-	InitBitMap(noffH.uninitData.size + UserStackSize, ThreadStackSize);
+	DEBUG('a', "Initializing threads' semaphores with a maximum of %d threads.\n", MAX_NB_THREADS);
+	threads = new Semaphore * [MAX_NB_THREADS];
+	threads[0] = new Semaphore("AddrSpace Semaphore (Main Thread)", 0);
+	for (i=1; i<MAX_NB_THREADS; i++)
+		threads[i] = new Semaphore("AddrSpace Semaphore", 1);
+
 }
 
 //----------------------------------------------------------------------
@@ -130,10 +126,8 @@ AddrSpace::AddrSpace(OpenFile *executable) {
 
 AddrSpace::~AddrSpace() {
 	delete stackSectorMap;
-	// LB: Missing [] for delete
-	// delete pageTable;
+	delete[] threads;
 	delete[] pageTable;
-	// End of modification
 }
 
 //----------------------------------------------------------------------
@@ -196,17 +190,5 @@ void AddrSpace::RestoreState() {
  * @result : the starting address of this sector.
  */
 int AddrSpace::GetAddrFromId(int id) {
-	return gsize - (id * ThreadStackSize);
+	return size - (id * ThreadStackSize);
 }
-
-/**
- * initialize a bitmap for the AddrSpace
- * @param size : the available stack size
- */
-void AddrSpace::InitBitMap(unsigned int size , unsigned int sectorSize) {
-	int nb_segments = size / sectorSize;
-	DEBUG('l', "Initializing Sector Map with %d sectors.\n",nb_segments);
-	stackSectorMap = new BitMap(nb_segments);
-	stackSectorMap->Find(); // Mark a segment as used for the first thread
-}
-
