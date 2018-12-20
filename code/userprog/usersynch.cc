@@ -46,7 +46,7 @@ void do_UserMutexLock() {
 	int res = USERSYNCH_ERROR;
 
 	Lock *lock = getMutexFromMap(id);
-	if (lock != NULL) {
+	if (lock != NULL && !lock->isHeldByCurrentThread()) {
 		lock->Acquire();
 		DEBUG('s', "Mutex locked by user's thread %d.\n", currentThread->id);
 		res = 0;
@@ -59,7 +59,7 @@ void do_UserMutexUnlock() {
 	int res = USERSYNCH_ERROR;
 
 	Lock *lock = getMutexFromMap(id);
-	if (lock != NULL) {
+	if (lock != NULL && lock->isHeldByCurrentThread()) {
 		DEBUG('s', "Mutex unlocked by user's thread %d.\n", currentThread->id);
 		lock->Release();
 		res = 0;

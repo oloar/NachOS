@@ -103,11 +103,18 @@ Lock::~Lock() {
 
 void Lock::Acquire() {
 	semaphore->P();
+	thread = currentThread;
 }
 
 void Lock::Release() {
+	thread = NULL;
 	semaphore->V();
 }
+
+bool Lock::isHeldByCurrentThread() {
+	return thread == currentThread;
+}
+
 
 Condition::Condition(const char *debugName) {
 	waiter = 0;
@@ -126,7 +133,6 @@ void Condition::Wait(Lock *conditionLock) {
 	waiter++;
 	lock->Release();
 	conditionLock->Release();
-	// FIXME : Stuck here
 	semaphore->P();
 	conditionLock->Acquire();
 }
