@@ -9,15 +9,17 @@ int attente_conso;
 
 void prod(void * arg) {
 	int i;
-	for (i = 0; i < 100; i++) {
+	for (i = 0; i < 5; i++) {
 		UserMutexLock(m);
 		while(nb_ressource == MAX_RSC)
 			UserConditionWait(attente_prod, m);
 		nb_ressource++;
+
 		PutString("Prod ");
 		PutChar(*(char *) arg);
 		PutInt(nb_ressource);
 		PutChar('\n');
+
 		UserConditionSignal(attente_conso);
 		UserMutexUnlock(m);
 	}
@@ -25,15 +27,17 @@ void prod(void * arg) {
 
 void conso(void * arg) {
 	int i;
-	for (i = 0; i < 100; i++) {
+	for (i = 0; i < 5; i++) {
 		UserMutexLock(m);
 		while (nb_ressource == 0)
 			UserConditionWait(attente_conso,m);
 		nb_ressource--;
+
 		PutString("Conso ");
 		PutChar(*(char *) arg);
 		PutInt(nb_ressource);
 		PutChar('\n');
+
 		UserConditionSignal(attente_prod);
 		UserMutexUnlock(m);
 	}
@@ -45,18 +49,19 @@ int main(void) {
 	attente_prod = UserConditionCreate();
 	attente_conso = UserConditionCreate();
 	int i,
-		tids[4] = {0,0,0,0};
-	char args[] = {'A','B','C','D'};
+		tids[] = {0,0,0,0,0,0,0,0};
+	char args[] = {'A','B','C','D','E','F','G','H'};
 
 	nb_ressource = 0;
 
-	for (i = 0; i < 2; i++)
-		tids[i] = UserThreadCreate(conso, (void *) &args[i]);
-	for (i = 2; i < 4; i++)
-		tids[i] = UserThreadCreate(prod, (void *) &args[i]);
-
 	for (i = 0; i < 4; i++)
-		UserThreadJoin(tids[i]);
+		tids[i] = UserThreadCreate(prod, (void *) &args[i]);
+	for (i = 4; i < 8; i++)
+		tids[i] = UserThreadCreate(conso, (void *) &args[i]);
+
+	for (i = 0; i < 8; i++)
+		if (tids[i] != -1)
+			UserThreadJoin(tids[i]);
 
 	UserConditionDestroy(attente_conso);
 	UserConditionDestroy(attente_prod);
