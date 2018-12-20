@@ -23,8 +23,8 @@
 class Semaphore;
 #endif
 
-#define UserStackSize 2048 // increase this as necessary!
-#define ThreadStackSize (3 * PageSize) // thread's stack size
+#define UserStackSize 2048// increase this as necessary!
+#define ThreadStackSize (2 * PageSize) // thread's stack size
 
 class AddrSpace {
 	public:
