@@ -20,6 +20,7 @@
 #include "copyright.h"
 #include "list.h"
 #include "thread.h"
+class Thread;
 
 // The following class defines a "semaphore" whose value is a non-negative
 // integer.  The semaphore has only two operations P() and V():
@@ -81,6 +82,7 @@ class Lock {
 		const char *name; // for debugging
 		// plus some other stuff you'll need to define
 		Semaphore * semaphore;
+		Thread * thread;
 };
 
 // The following class defines a "condition variable".  A condition
