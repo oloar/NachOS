@@ -10,11 +10,7 @@ void sleep() {
 
 void func(void * arg) {
 	UserSemP(sem);
-	PutChar(*(char *) arg);
-	PutString(" P");
 	sleep();
-	PutChar(*(char *) arg);
-	PutString(" V");
 	UserSemV(sem);
 	UserThreadExit();
 }

@@ -10,11 +10,7 @@ void sleep() {
 
 void func(void * arg) {
 	UserMutexLock(m);
-	PutChar(*(char *) arg);
-	PutString(" lock");
 	sleep();
-	PutChar(*(char *) arg);
-	PutString(" unlock");
 	UserMutexUnlock(m);
 	UserThreadExit();
 }
