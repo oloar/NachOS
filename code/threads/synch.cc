@@ -110,10 +110,10 @@ void Lock::Release() {
 }
 
 Condition::Condition(const char *debugName) {
+	waiter = 0;
 	name = debugName;
-	semaphore = new Semaphore("Condition Semaphore", 0);
 	lock = new Lock("Condition Lock");;
-	value = 0;
+	semaphore = new Semaphore("Condition Semaphore", 0);
 }
 
 Condition::~Condition() {
@@ -123,17 +123,18 @@ Condition::~Condition() {
 
 void Condition::Wait(Lock *conditionLock) {
 	lock->Acquire();
-	value++;
+	waiter++;
 	lock->Release();
 	conditionLock->Release();
+	// FIXME : Stuck here
 	semaphore->P();
 	conditionLock->Acquire();
 }
 
 void Condition::Signal() {
 	lock->Acquire();
-	if (value > 0) {
-		value--;
+	if (waiter > 0) {
+		waiter--;
 		semaphore->V();
 	}
 	lock->Release();
@@ -141,8 +142,8 @@ void Condition::Signal() {
 
 void Condition::Broadcast() {
 	lock->Acquire();
-	while (value > 0) {
-		value--;
+	while (waiter > 0) {
+		waiter--;
 		semaphore->V();
 	}
 	lock->Release();

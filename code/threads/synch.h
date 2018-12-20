@@ -135,6 +135,6 @@ class Condition {
 		// plus some other stuff you'll need to define
 		Semaphore *semaphore;
 		Lock *lock;
-		int value;
+		int waiter;
 };
 #endif // SYNCH_H
