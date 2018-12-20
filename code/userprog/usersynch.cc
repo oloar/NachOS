@@ -2,6 +2,7 @@
 #include "synch.h"
 #include <map>
 
+#define USERSYNCH_ERROR 1
 
 ///////////////////////////////////////////////////////////
 // Mutex
@@ -43,21 +44,27 @@ void do_UserMutexDestroy() {
 void do_UserMutexLock() {
 	DEBUG('s', "Mutex locked by user.\n");
 	int id = machine->ReadRegister(4);
+	int res = USERSYNCH_ERROR;
+
 	Lock *lock = getMutexFromMap(id);
-	if (lock == NULL)
-		machine->WriteRegister(2, -1);
-	else
+	if (lock != NULL) {
 		lock->Acquire();
+		res = 0;
+	}
+	machine->WriteRegister(2, res);
 }
 
 void do_UserMutexUnlock() {
 	DEBUG('s', "Mutex unlocked by user.\n");
 	int id = machine->ReadRegister(4);
+	int res = USERSYNCH_ERROR;
+
 	Lock *lock = getMutexFromMap(id);
-	if (lock == NULL)
-		machine->WriteRegister(2, -1);
-	else
+	if (lock != NULL) {
 		lock->Release();
+		res = 0;
+	}
+	machine->WriteRegister(2, res);
 }
 
 ///////////////////////////////////////////////////////////
@@ -104,22 +111,28 @@ void do_UserSemDestroy() {
 void do_UserSemP() {
 	DEBUG('s', "Semaphore->P() by user.\n");
 	int id = machine->ReadRegister(4);
+	int res = USERSYNCH_ERROR;
+
 	Semaphore *sem = getSemaphoreFromMap(id);
-	if (sem == NULL)
-		machine->WriteRegister(2, -1);
-	else
+	if (sem != NULL) {
 		sem->P();
+		res = 0;
+	}
+	machine->WriteRegister(2, res);
 }
 
 
 void do_UserSemV() {
 	DEBUG('s', "Semaphore->V() by user.\n");
 	int id = machine->ReadRegister(4);
+	int res = USERSYNCH_ERROR;
+
 	Semaphore *sem = getSemaphoreFromMap(id);
-	if (sem == NULL)
-		machine->WriteRegister(2, -1);
-	else
+	if (sem != NULL) {
 		sem->V();
+		res = 0;
+	}
+	machine->WriteRegister(2, res);
 }
 
 ///////////////////////////////////////////////////////////
@@ -165,30 +178,37 @@ void do_UserConditionWait() {
 	DEBUG('s', "Condition wait by user.\n");
 	int condId = machine->ReadRegister(4);
 	int mutexId = machine->ReadRegister(5);
+	int res = USERSYNCH_ERROR;
 	Condition *cond = getConditionFromMap(condId);
 	Lock *mutex = getMutexFromMap(mutexId);
-	if (cond == NULL || mutex == NULL)
-		machine->WriteRegister(2, -1);
-	else
+
+	if (cond != NULL && mutex != NULL) {
 		cond->Wait(mutex);
+		res = 0;
+	}
+	machine->WriteRegister(2, res);
 }
 
 void do_UserConditionSignal() {
 	DEBUG('s', "Condition signal by user.\n");
 	int condId = machine->ReadRegister(4);
+	int res = USERSYNCH_ERROR;
 	Condition *cond = getConditionFromMap(condId);
-	if (cond == NULL)
-		machine->WriteRegister(2, -1);
-	else
+	if (cond != NULL) {
 		cond->Signal();
+		res = 0;
+	}
+	machine->WriteRegister(2, res);
 }
 
 void do_UserConditionBroadcast() {
 	DEBUG('s', "Condition signal by user.\n");
 	int condId = machine->ReadRegister(4);
+	int res = USERSYNCH_ERROR;
 	Condition *cond = getConditionFromMap(condId);
-	if (cond == NULL)
-		machine->WriteRegister(2, -1);
-	else
+	if (cond != NULL) {
 		cond->Broadcast();
+		res = 0;
+	}
+	machine->WriteRegister(2, res);
 }
