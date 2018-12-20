@@ -35,6 +35,22 @@
 #define SC_GetString 14
 #define SC_PutInt 15
 #define SC_GetInt 16
+#define SC_UserThreadCreate 17
+#define SC_UserThreadExit 18
+#define SC_UserThreadJoin 19
+#define SC_UserMutexCreate 20
+#define SC_UserMutexDestroy 21
+#define SC_UserMutexLock 22
+#define SC_UserMutexUnlock 23
+#define SC_UserSemCreate 24
+#define SC_UserSemDestroy 25
+#define SC_UserSemP 26
+#define SC_UserSemV 27
+#define SC_UserConditionCreate 28
+#define SC_UserConditionDestroy 29
+#define SC_UserConditionWait 30
+#define SC_UserConditionSignal 31
+#define SC_UserConditionBroadcast 32
 
 #ifdef IN_USER_MODE
 
@@ -129,12 +145,78 @@ void Fork(void (*func)());
  */
 void Yield();
 
-void PutChar();
+/**
+ * Put a char to the console
+ * @param c : the char
+ */
+void PutChar(char c);
+
+/*
+ * Read a char from the console
+ * @result : the char
+ */
 char GetChar();
-void PutString();
-void GetString();
-void PutInt();
+
+/*
+ * Write a string to the console
+ * @param s : the string to write
+ */
+void PutString(char * s);
+
+/*
+ * Read a string from the console
+ * @param s : the string
+ * @param n : max number of characters to read
+ */
+void GetString(char * s, int n);
+
+/*
+ * Write an int to the console
+ * @param n : the int
+ */
+void PutInt(int n);
+
+/*
+ * Read an int from the console
+ * @result : the int
+ */
 int GetInt();
+
+/*
+ * Create a thread running a function
+ * @param f : pointer to the function to be runned
+ * @param arg : pointer to the function's arguments
+ */
+int UserThreadCreate(void (*f)(void *), void * arg);
+
+/*
+ * Exit the current thread
+ */
+void UserThreadExit();
+
+/*
+ * Wait for a thread to finish
+ * @param tid : the thread to wait id
+ * @result : TODO
+ */
+int UserThreadJoin(int tid);
+
+int UserMutexCreate();
+int UserMutexDestroy(int id);
+int UserMutexLock(int id);
+int UserMutexUnlock(int id);
+
+int UserSemCreate();
+int UserSemDestroy(int id);
+int UserSemP(int id);
+int UserSemV(int id);
+
+int UserConditionCreate();
+void UserConditionDestroy(int condId);
+void UserConditionWait(int condId, int mutexId);
+void UserConditionSignal(int condId); //, int mutexId);
+void UserConditionBroadcast(int condId); // , int mutexId);
+
 #endif // IN_USER_MODE
 
 #endif /* SYSCALL_H */

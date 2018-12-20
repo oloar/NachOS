@@ -30,6 +30,16 @@ SynchDisk *synchDisk;
 #ifdef USER_PROGRAM // requires either FILESYS or FILESYS_STUB
 Machine *machine;   // user program memory and registers
 SynchConsole *synchconsole;
+
+int currentMutexId = 0;
+std::map<int,Lock *> *lockMap;
+
+int currentSemId = 0; // used to get unique sem id, DO NOT RESET
+std::map<int,Semaphore *> *semaphoreMap; // keeps track of every user semaphore
+
+int currentConditionId = 0;
+std::map<int,Condition *> *conditionMap;
+
 #endif
 
 #ifdef NETWORK
@@ -146,6 +156,9 @@ void Initialize(int argc, char **argv) {
 #ifdef USER_PROGRAM
 	machine = new Machine(debugUserProg); // this must come first
 	synchconsole = new SynchConsole(NULL,NULL);
+	lockMap = new std::map<int,Lock *>();
+	semaphoreMap = new std::map<int,Semaphore *>();
+	conditionMap = new std::map<int,Condition *>();
 #endif
 
 #ifdef FILESYS
@@ -172,6 +185,9 @@ void Cleanup() {
 #endif
 
 #ifdef USER_PROGRAM
+	delete conditionMap;
+	delete semaphoreMap;
+	delete lockMap;
 	delete synchconsole;
 	delete machine;
 #endif

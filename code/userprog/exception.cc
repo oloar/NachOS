@@ -25,6 +25,8 @@
 #include "syscall.h"
 #include "system.h"
 #include "userconsole.h"
+#include "userthread.h"
+#include "usersynch.h"
 
 //----------------------------------------------------------------------
 // UpdatePC : Increments the Program Counter register in order to resume
@@ -67,52 +69,113 @@ void ExceptionHandler(ExceptionType which) {
 
 	if (which == SyscallException) {
 		switch (type) {
-			case SC_Halt: {
-				DEBUG('a', "Shutdown, initiated by user program.\n");
-				interrupt->Halt();
-				break;
-			}
-			case SC_Exit: {
-				/*
-				 * Copy the return value of the program to reg2
-				 * @author : Vincent Pinet
-				 */
-				DEBUG('a', "Exit, initiated by user program.\n");
-				machine->WriteRegister(2, machine->ReadRegister(4));
-				break;
-			}
-			case SC_PutChar: {
-				do_PutChar();
-				break;
-			}
-			case SC_PutString: {
-				do_PutString();
-				break;
-			}
-			case SC_GetChar: {
-				do_GetChar();
-				break;
-			}
-			case SC_GetString: {
-				do_GetString();
-				break;
-			}
-			case SC_PutInt: {
-				do_PutInt();
-				break;
-			}
-			case SC_GetInt: {
-				do_GetInt();
-				break;
-			}
-			default: {
-				printf("Unexpected user mode exception %d %d\n", which, type);
-				ASSERT(FALSE);
-				break;
-			}
+		case SC_Halt:
+			DEBUG('e', "Shutdown, initiated by user program.\n");
+			if (currentThread->id == 0 /* est le main thread */)
+				do_MainThreadExit();
+			interrupt->Halt();
+			break;
+		case SC_Exit:
+			DEBUG('e', "Exit, initiated by user program.\n");
+			if (currentThread->id == 0 /* est le main thread */)
+				do_MainThreadExit();
+			interrupt->Halt(); // Temporaire jusqu'a multi process
+			break;
+		case SC_PutChar:
+			DEBUG('e', "PutChar, initiated by user program\n");
+			do_PutChar();
+			break;
+		case SC_PutString:
+			DEBUG('e', "PutString, initiated by user program\n");
+			do_PutString();
+			break;
+		case SC_GetChar:
+			DEBUG('e', "GetChar, initiated by user program\n");
+			do_GetChar();
+			break;
+		case SC_GetString:
+			DEBUG('e', "GetString, initiated by user program\n");
+			do_GetString();
+			break;
+		case SC_PutInt:
+			DEBUG('e', "PutInt, initiated by user program\n");
+			do_PutInt();
+			break;
+		case SC_GetInt:
+			DEBUG('e', "GetInt, initiated by user program\n");
+			do_GetInt();
+			break;
+		case SC_UserThreadCreate:
+			DEBUG('e', "UserThreadCreate, initiated by user program\n");
+			machine->WriteRegister(2, do_UserThreadCreate(machine->ReadRegister(4), machine->ReadRegister(5)));
+			break;
+		case SC_UserThreadExit:
+			DEBUG('e', "UserThreadExit, initiated by user program\n");
+			ASSERT(currentThread->id != 0); // Main thread doit s'arrêter avec Exit ou Halt ?
+			do_UserThreadExit();
+			break;
+		case SC_UserThreadJoin:
+			DEBUG('e', "UserThreadJoin, initiated by user program\n");
+			do_UserThreadJoin(machine->ReadRegister(4));
+			break;
+		case SC_UserMutexCreate:
+			DEBUG('e', "UserMutexCreate, initiated by user program\n");
+			do_UserMutexCreate();
+			break;
+		case SC_UserMutexDestroy:
+			DEBUG('e', "UserMutexDestroy, initiated by user program\n");
+			do_UserMutexDestroy();
+			break;
+		case SC_UserMutexLock:
+			DEBUG('e', "UserMutexLock, initiated by user program\n");
+			do_UserMutexLock();
+			break;
+		case SC_UserMutexUnlock:
+			DEBUG('e', "UserMutexUnlock, initiated by user program\n");
+			do_UserMutexUnlock();
+			break;
+		case SC_UserSemCreate:
+			DEBUG('e', "UserSemCreate, initiated by user program\n");
+			do_UserSemCreate();
+			break;
+		case SC_UserSemDestroy:
+			DEBUG('e', "UserSemDestroy, initiated by user program\n");
+			do_UserSemDestroy();
+			break;
+		case SC_UserSemP:
+			DEBUG('e', "UserSemP, initiated by user program\n");
+			do_UserSemP();
+			break;
+		case SC_UserSemV:
+			DEBUG('e', "UserSemV, initiated by user program\n");
+			do_UserSemV();
+			break;
+		case SC_UserConditionCreate:
+			DEBUG('e', "UserConditionCreate, initiated by user program\n");
+			do_UserConditionCreate();
+			break;
+		case SC_UserConditionDestroy:
+			DEBUG('e', "UserConditionDestroy, initiated by user program\n");
+			do_UserConditionDestroy();
+			break;
+		case SC_UserConditionWait:
+			DEBUG('e', "UserConditionWait, initiated by user program\n");
+			do_UserConditionWait();
+			break;
+		case SC_UserConditionSignal:
+			DEBUG('e', "UserConditionSignal, initiated by user program\n");
+			do_UserConditionSignal();
+			break;
+		case SC_UserConditionBroadcast:
+			DEBUG('e', "UserConditionBroadcast, initiated by user program\n");
+			do_UserConditionBroadcast();
+			break;
+		default:
+			printf("Unexpected user MODE exception %d %d\n", which, type);
+			ASSERT(FALSE);
 		}
 	} else {
-		printf("Unexpected user mode exception %d %d\n", which, type);
+		printf("Unexpected user exception TYPE %d %d\n", which, type);
 		ASSERT(FALSE);
 	}
 
