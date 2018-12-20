@@ -48,8 +48,8 @@ void do_UserMutexLock() {
 	Lock *lock = getMutexFromMap(id);
 	if (lock != NULL) {
 		lock->Acquire();
-		res = 0;
 		DEBUG('s', "Mutex locked by user's thread %d.\n", currentThread->id);
+		res = 0;
 	}
 	machine->WriteRegister(2, res);
 }
@@ -60,9 +60,9 @@ void do_UserMutexUnlock() {
 
 	Lock *lock = getMutexFromMap(id);
 	if (lock != NULL) {
+		DEBUG('s', "Mutex unlocked by user's thread %d.\n", currentThread->id);
 		lock->Release();
 		res = 0;
-		DEBUG('s', "Mutex unlocked by user's thread %d.\n", currentThread->id);
 	}
 	machine->WriteRegister(2, res);
 }

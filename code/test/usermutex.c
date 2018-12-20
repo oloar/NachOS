@@ -3,18 +3,17 @@
 int m;
 void sleep() {
 	int i;
-	int limit = 104857;
+	int limit = 100000;
 	for (i = 0; i < limit; i++);
 }
+
 
 
 void func(void * arg) {
 	UserMutexLock(m);
 	sleep();
 	UserMutexUnlock(m);
-	UserThreadExit();
 }
-
 
 int main(void) {
 	m = UserMutexCreate();
