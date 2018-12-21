@@ -206,7 +206,7 @@ int UserMutexDestroy(int id);
 int UserMutexLock(int id);
 int UserMutexUnlock(int id);
 
-int UserSemCreate();
+int UserSemCreate(int value);
 int UserSemDestroy(int id);
 int UserSemP(int id);
 int UserSemV(int id);
