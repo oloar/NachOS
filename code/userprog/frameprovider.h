@@ -8,6 +8,7 @@ class FrameProvider {
 		~FrameProvider();
 
 		int GetEmptyFrame();
+		int GetRandomEmptyFrame();
 		void ReleaseFrame(int frameidx);
 		int NumAvailFrame();
 	private:
