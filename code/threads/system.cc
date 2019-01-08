@@ -157,7 +157,7 @@ void Initialize(int argc, char **argv) {
 	lockMap = new std::map<int,Lock *>();
 	semaphoreMap = new std::map<int,Semaphore *>();
 
-	frameProvider= new FrameProvider();
+	frameProvider = new FrameProvider();
 #endif
 
 #ifdef FILESYS
