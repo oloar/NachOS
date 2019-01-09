@@ -70,7 +70,7 @@ void ExceptionHandler(ExceptionType which) {
 	if (which == SyscallException) {
 		switch (type) {
 		case SC_Halt: {
-			DEBUG('a', "Shutdown, initiated by user program.\n");
+			DEBUG('e', "Shutdown, initiated by user program.\n");
 			// Si c'est le thread "princiaple" (celui qui execute le main)
 			if (currentThread->id == 0)
 				for (int i=1; i<MAX_NB_THREADS; i++)
@@ -83,7 +83,7 @@ void ExceptionHandler(ExceptionType which) {
 			 * Copy the return value of the program to reg2
 			 * @author : Vincent Pinet
 			 */
-			DEBUG('a', "Exit, initiated by user program.\n");
+			DEBUG('e', "Exit, initiated by user program.\n");
 			machine->WriteRegister(2, machine->ReadRegister(4));
 			break;
 		}
@@ -148,6 +148,9 @@ void ExceptionHandler(ExceptionType which) {
 			break;
 		case SC_UserSemV:
 			do_UserSemV();
+			break;
+		case SC_ForkExec:
+			machine->WriteRegister(2, do_ForkExec(machine->ReadRegister(4)));
 			break;
 		default:
 			printf("Unexpected user MODE exception %d %d\n", which, type);

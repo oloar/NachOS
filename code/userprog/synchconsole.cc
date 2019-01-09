@@ -34,6 +34,7 @@ char SynchConsole::SynchGetChar() {
 void SynchConsole::SynchPutChar(char c) {
 	lock->Acquire();
 	console->PutChar(c);
+	printf("allo %p\n", currentThread->space);
 	writeDone->P();
 	lock->Release();
 }

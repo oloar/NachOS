@@ -23,7 +23,6 @@ int FrameProvider::GetRandomEmptyFrame() {
 		randomindex,
 		nbfree;
 	int *freeFrames;
-
 	nbfree = bitmap->NumClear();
 	ASSERT(nbfree > 0);
 

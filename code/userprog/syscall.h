@@ -46,6 +46,7 @@
 #define SC_UserSemDestroy 25
 #define SC_UserSemP 26
 #define SC_UserSemV 27
+#define SC_ForkExec 28
 
 #ifdef IN_USER_MODE
 
@@ -167,6 +168,8 @@ int UserSemCreate();
 int UserSemDestroy(int id);
 int UserSemP(int id);
 int UserSemV(int id);
+
+int ForkExec(char * s);
 
 #endif // IN_USER_MODE
 

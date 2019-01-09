@@ -50,6 +50,10 @@ static void ReadAtVirtual(OpenFile *executable, int virtualaddr, int numBytes, i
 	int reste = readbyte %4;
 	bool b = TRUE;
 	int i = 0 ;
+
+	TranslationEntry * savept = machine->pageTable;
+	int savepts = machine->pageTableSize;
+
 	machine->pageTable = pageTable;
 	machine->pageTableSize = numPages*PageSize;
 	while( i <n && b ){
@@ -60,6 +64,9 @@ static void ReadAtVirtual(OpenFile *executable, int virtualaddr, int numBytes, i
 	if (reste > 0) {
 		machine->WriteMem(virtualaddr,reste,bufftemp[n]);
 	}
+
+	machine->pageTable = savept;
+	machine->pageTableSize = savepts;
 }
 //----------------------------------------------------------------------
 // AddrSpace::AddrSpace
@@ -115,7 +122,8 @@ AddrSpace::AddrSpace(OpenFile *executable) {
 
 	// zero out the entire address space, to zero the unitialized data
 	// segment and the stack segment
-	bzero(machine->mainMemory, size);
+
+	// bzero(machine->mainMemory, size); §!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	// then, copy in the code and data segments into memory
 	if (noffH.code.size > 0) {
@@ -198,7 +206,10 @@ void AddrSpace::InitRegisters() {
 //      For now, nothing!
 //----------------------------------------------------------------------
 
-void AddrSpace::SaveState() {}
+void AddrSpace::SaveState() {
+	// pageTable = machine->pageTable;
+	// numPages = machine->pageTableSize;
+}
 
 //----------------------------------------------------------------------
 // AddrSpace::RestoreState

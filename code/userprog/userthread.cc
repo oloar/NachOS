@@ -10,7 +10,7 @@ static void StartUserThread(int data) {
 	duo * args = (duo *)data;
 
 	// Pas compris l'utilité mais marche sans. ???
-	// currentThread->space->RestoreState();
+	currentThread->space->RestoreState();
 	// currentThread->space->InitRegisters();
 
 	machine->WriteRegister(PCReg, args->f);
@@ -58,4 +58,34 @@ void do_UserThreadExit(void) {
 	currentThread->space->tids[currentThread->id]->V();
 	currentThread->space->stackSectorMap->Clear(currentThread->sectorId);
 	currentThread->Finish();
+}
+
+static void StartForkExec(int data) {
+	currentThread->space->InitRegisters(); // set the initial register values
+	currentThread->space->RestoreState();
+	machine->Run();
+}
+
+
+int do_ForkExec(int addr) {
+	printf("==%p\n", currentThread->space);
+	char * filename = new char[MAX_STRING_SIZE];
+	machine->CopyStringFromMachine(addr, filename, MAX_STRING_SIZE);
+
+	OpenFile *executable = fileSystem->Open(filename);
+	AddrSpace *space;
+
+	if (executable == NULL) {
+		printf("Unable to open file %s\n", filename);
+		return -1;
+	}
+	space = new AddrSpace(executable);
+	printf("==%p\n", space);
+	Thread * newFork = new Thread("newFork");
+	newFork->Fork(StartForkExec, 0);
+	newFork->space = space;
+
+	// delete filename;
+	// delete executable; // close file
+	return 0;
 }
