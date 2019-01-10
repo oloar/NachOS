@@ -28,8 +28,13 @@ static void StartUserThread(int data) {
 
 int do_UserThreadCreate(int f, int arg)  {
 
+
 	Thread * newThread = new Thread("newThread");
 
+	// Abandon de la création si on n'a atteint le maximum de threads crée
+	if (newThread->id >= MAX_NB_THREADS)
+		return -2;
+		
 	// On demande de la memoire pour le stack
 	newThread->sectorId = currentThread->space->stackSectorMap->Find();
 
