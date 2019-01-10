@@ -33,12 +33,14 @@ void do_UserMutexCreate() {
 void do_UserMutexDestroy() {
 	int id = machine->ReadRegister(4);
 	Lock *lock = getMutexFromMap(id);
+	int res = USERSYNCH_ERROR;
 
 	if (lock != NULL) {                      // if lock in map
 		DEBUG('s', "Mutex destroyed by user's thread %d.\n", currentThread->id);
 		delete lock;                         // Delete it
 		lockMap->erase(id);             // Remove the entry from the map
 	}
+	machine->WriteRegister(2, res);
 }
 
 void do_UserMutexLock() {
