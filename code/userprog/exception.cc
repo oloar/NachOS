@@ -71,15 +71,15 @@ void ExceptionHandler(ExceptionType which) {
 		switch (type) {
 		case SC_Halt:
 			DEBUG('e', "Shutdown, initiated by user program.\n");
-			if (currentThread->id == 0 /* est le main thread */)
+			if (currentThread->tid == 0 /* est le main thread */)
 				do_MainThreadExit();
 			interrupt->Halt();
 			break;
 		case SC_Exit:
 			DEBUG('e', "Exit, initiated by user program.\n");
-			if (currentThread->id == 0 /* est le main thread */)
+			if (currentThread->tid == 0 /* est le main thread */)
 				do_MainThreadExit();
-			interrupt->Halt(); // Temporaire jusqu'a multi process
+			currentThread->Finish();
 		case SC_PutChar:
 			DEBUG('e', "PutChar, initiated by user program\n");
 			do_PutChar();
@@ -110,7 +110,7 @@ void ExceptionHandler(ExceptionType which) {
 			break;
 		case SC_UserThreadExit:
 			DEBUG('e', "UserThreadExit, initiated by user program\n");
-			ASSERT(currentThread->id != 0); // Main thread doit s'arrêter avec Exit ou Halt ?
+			ASSERT(currentThread->tid != 0); // Main thread doit s'arrêter avec Exit ou Halt ?
 			do_UserThreadExit();
 			break;
 		case SC_UserThreadJoin:

@@ -26,7 +26,7 @@ void do_UserMutexCreate() {
 	id = currentMutexId++;
 	Lock *lock = new Lock("User lock");
 	lockMap->insert(std::pair<int,Lock *>(id,lock));
-	DEBUG('s', "Mutex created by user's thread %d.\n", currentThread->id);
+	DEBUG('s', "Mutex created by user's thread %d.\n", currentThread->tid);
 	machine->WriteRegister(2, id);
 }
 
@@ -36,7 +36,7 @@ void do_UserMutexDestroy() {
 	int res = USERSYNCH_ERROR;
 
 	if (lock != NULL) {                      // if lock in map
-		DEBUG('s', "Mutex destroyed by user's thread %d.\n", currentThread->id);
+		DEBUG('s', "Mutex destroyed by user's thread %d.\n", currentThread->tid);
 		delete lock;                         // Delete it
 		lockMap->erase(id);             // Remove the entry from the map
 	}
@@ -50,7 +50,7 @@ void do_UserMutexLock() {
 	Lock *lock = getMutexFromMap(id);
 	if (lock != NULL && !lock->isHeldByCurrentThread()) {
 		lock->Acquire();
-		DEBUG('s', "Mutex locked by user's thread %d.\n", currentThread->id);
+		DEBUG('s', "Mutex locked by user's thread %d.\n", currentThread->tid);
 		res = 0;
 	}
 	machine->WriteRegister(2, res);
@@ -62,7 +62,7 @@ void do_UserMutexUnlock() {
 
 	Lock *lock = getMutexFromMap(id);
 	if (lock != NULL && lock->isHeldByCurrentThread()) {
-		DEBUG('s', "Mutex unlocked by user's thread %d.\n", currentThread->id);
+		DEBUG('s', "Mutex unlocked by user's thread %d.\n", currentThread->tid);
 		lock->Release();
 		res = 0;
 	}
@@ -89,7 +89,7 @@ Semaphore *getSemaphoreFromMap(int id) {
 
 
 void do_UserSemCreate() {
-	DEBUG('s', "Semaphore created by user's thread %d.\n", currentThread->id);
+	DEBUG('s', "Semaphore created by user's thread %d.\n", currentThread->tid);
 	int id,     // Sem unique id used by user
 		value;	// Sem initiale value
 	id = currentSemId++; // Never set back to 0 to guaranty uniqueness
@@ -100,7 +100,7 @@ void do_UserSemCreate() {
 }
 
 void do_UserSemDestroy() {
-	DEBUG('s', "Semaphore destroyed by user's thread %d.\n", currentThread->id);
+	DEBUG('s', "Semaphore destroyed by user's thread %d.\n", currentThread->tid);
 	int id = machine->ReadRegister(4);
 	Semaphore *sem = getSemaphoreFromMap(id);
 
@@ -118,7 +118,7 @@ void do_UserSemP() {
 	if (sem != NULL) {
 		sem->P();
 		res = 0;
-		DEBUG('s', "Semaphore->P() by user's thread %d.\n", currentThread->id);
+		DEBUG('s', "Semaphore->P() by user's thread %d.\n", currentThread->tid);
 	}
 	machine->WriteRegister(2, res);
 }
@@ -132,7 +132,7 @@ void do_UserSemV() {
 	if (sem != NULL) {
 		sem->V();
 		res = 0;
-		DEBUG('s', "Semaphore->V() by user's thread %d.\n", currentThread->id);
+		DEBUG('s', "Semaphore->V() by user's thread %d.\n", currentThread->tid);
 	}
 	machine->WriteRegister(2, res);
 }
@@ -157,7 +157,7 @@ Condition *getConditionFromMap(int id) {
 
 
 void do_UserConditionCreate() {
-	DEBUG('s', "Condition created by user's thread %d.\n", currentThread->id);
+	DEBUG('s', "Condition created by user's thread %d.\n", currentThread->tid);
 	int id;                                                     // unique id used by user
 	id = currentConditionId++;                                  // Never set back to 0 to guaranty uniqueness
 	Condition *cond = new Condition("User condition");
@@ -170,7 +170,7 @@ void do_UserConditionDestroy() {
 	Condition *cond = getConditionFromMap(id);
 
 	if (cond != NULL) {                                          // if cond in map
-		DEBUG('s', "Condition destroyed by user's thread %d.\n", currentThread->id);
+		DEBUG('s', "Condition destroyed by user's thread %d.\n", currentThread->tid);
 		delete cond;                                             // Delete it
 		conditionMap->erase(id);                                // Remove the entry from the map
 	}
@@ -184,7 +184,7 @@ void do_UserConditionWait() {
 	Lock *mutex = getMutexFromMap(mutexId);
 
 	if (cond != NULL && mutex != NULL) {
-		DEBUG('s', "Condition wait by user's thread %d.\n", currentThread->id);
+		DEBUG('s', "Condition wait by user's thread %d.\n", currentThread->tid);
 		cond->Wait(mutex);
 		res = 0;
 	}
@@ -196,7 +196,7 @@ void do_UserConditionSignal() {
 	int res = USERSYNCH_ERROR;
 	Condition *cond = getConditionFromMap(condId);
 	if (cond != NULL) {
-		DEBUG('s', "Condition signal by user's thread %d.\n", currentThread->id);
+		DEBUG('s', "Condition signal by user's thread %d.\n", currentThread->tid);
 		cond->Signal();
 		res = 0;
 	}
@@ -208,7 +208,7 @@ void do_UserConditionBroadcast() {
 	int res = USERSYNCH_ERROR;
 	Condition *cond = getConditionFromMap(condId);
 	if (cond != NULL) {
-		DEBUG('s', "Condition signal by user's thread %d.\n", currentThread->id);
+		DEBUG('s', "Condition signal by user's thread %d.\n", currentThread->tid);
 		cond->Broadcast();
 		res = 0;
 	}

@@ -24,9 +24,6 @@
 		   // execution stack, for detecting
 		   // stack overflows
 
-static int ids = 0;
-static Lock * idsLock = new Lock("Thread IDs Lock");
-
 //----------------------------------------------------------------------
 // Thread::Thread
 //      Initialize a thread control block, so that we can then call
@@ -40,11 +37,9 @@ Thread::Thread(const char *threadName) {
 	stackTop = NULL;
 	stack = NULL;
 	status = JUST_CREATED;
+	tid = 0;
 #ifdef USER_PROGRAM
 	space = NULL;
-	idsLock->Acquire();
-	id = ids++;
-	idsLock->Release();
 	// FBT: Need to initialize special registers of simulator to 0
 	// in particular LoadReg or it could crash when switching
 	// user threads.

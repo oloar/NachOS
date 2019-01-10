@@ -1,5 +1,6 @@
 #include "system.h"
 #include "addrspace.h"
+#include <map>
 
 typedef struct {
 	int f;
@@ -18,7 +19,7 @@ static void StartUserThread(int data) {
 	machine->WriteRegister(4, args->arg);
 
 	int stackAddr = currentThread->space->GetAddrFromId(currentThread->sectorId);
-	DEBUG('t' , "New user thread %d with stack starting at %d:%d.\n", currentThread->id, currentThread->sectorId, stackAddr);
+	DEBUG('t' , "New user thread %d with stack starting at %d:%d.\n", currentThread->tid, currentThread->sectorId, stackAddr);
 	machine->WriteRegister(StackReg, stackAddr);
 
 	delete (thread_args *)data;
@@ -30,11 +31,12 @@ int do_UserThreadCreate(int f, int arg)  {
 
 
 	Thread * newThread = new Thread("newThread");
+	newThread->tid = currentThread->space->currentThreadId++;
 
 	// Abandon de la création si on n'a atteint le maximum de threads crée
-	if (newThread->id >= MAX_NB_THREADS)
+	if (newThread->tid >= MAX_NB_THREADS)
 		return -2;
-		
+
 	// On demande de la memoire pour le stack
 	newThread->sectorId = currentThread->space->stackSectorMap->Find();
 
@@ -46,7 +48,7 @@ int do_UserThreadCreate(int f, int arg)  {
 	currentThread->space->userexitaddr = machine->ReadRegister(6);
 
 	// On marque le thread id comme en cours d'exécution
-	currentThread->space->threads[newThread->id]->P();
+	currentThread->space->threads[newThread->tid]->P();
 
 	thread_args * args = new thread_args();
 	args->f = f;
@@ -55,7 +57,7 @@ int do_UserThreadCreate(int f, int arg)  {
 	// Lancement du thread (Fork s'occupe du partage de l'AddrSpace)
 	newThread->Fork(StartUserThread, (int)args);
 
-	return newThread->id;
+	return newThread->tid;
 }
 
 int do_UserThreadJoin(int tid) {
@@ -67,9 +69,9 @@ int do_UserThreadJoin(int tid) {
 }
 
 void do_UserThreadExit() {
-	DEBUG('t', "Exiting user thread %d with sector %d.\n", currentThread->id, currentThread->sectorId);
+	DEBUG('t', "Exiting user thread %d with sector %d.\n", currentThread->tid, currentThread->sectorId);
 	// On marque la fin de l'exécution
-	currentThread->space->threads[currentThread->id]->V();
+	currentThread->space->threads[currentThread->tid]->V();
 	// On rend le mémoire du stack
 	currentThread->space->stackSectorMap->Clear(currentThread->sectorId);
 
@@ -79,9 +81,21 @@ void do_UserThreadExit() {
 void do_MainThreadExit() {
 	DEBUG('t', "Exiting main thread 0 with sector %d.\n", currentThread->sectorId);
 	// On attend les autres threads de l'AddrSpace
-	if (currentThread->id == 0)
-		for (int i=1; i<MAX_NB_THREADS; i++)
-			currentThread->space->threads[i]->P();
+	for (int i=1; i<MAX_NB_THREADS; i++)
+		currentThread->space->threads[i]->P();
+
+	// On attend les processus fils
+	std::map<int, Semaphore *>::iterator it;
+	for (it = currentThread->space->children->begin(); it != currentThread->space->children->end(); it++) {
+		it->second->P();
+	}
+
+	// HALT
+	if (currentThread->space->pid == 0)
+		interrupt->Halt();
+
+	// On signal son père que l'on a fini
+	currentThread->space->root->children->find(currentThread->space->pid)->second->V();
 
 	// Valeur du return pour le shell ?
 	machine->WriteRegister(2, machine->ReadRegister(4));
@@ -91,31 +105,30 @@ void do_MainThreadExit() {
 }
 
 static void StartForkExec(int data) {
-	currentThread->space->InitRegisters(); // set the initial register values
+	currentThread->space = (AddrSpace *)data;
+	currentThread->space->InitRegisters();
 	currentThread->space->RestoreState();
 	machine->Run();
 }
 
 
 int do_ForkExec(int addr) {
-	printf("==%p\n", currentThread->space);
-	char * filename = new char[MAX_STRING_SIZE];
+	char filename[MAX_STRING_SIZE];
 	machine->CopyStringFromMachine(addr, filename, MAX_STRING_SIZE);
 
-	OpenFile *executable = fileSystem->Open(filename);
-	AddrSpace *space;
+	OpenFile * executable = fileSystem->Open(filename);
+	AddrSpace * newSpace;
 
 	if (executable == NULL) {
 		printf("Unable to open file %s\n", filename);
 		return -1;
 	}
-	space = new AddrSpace(executable);
-	printf("==%p\n", space);
+	newSpace = new AddrSpace(executable);
+	newSpace->root = currentThread->space;
+	currentThread->space->children->insert(std::pair<int, Semaphore *>(newSpace->pid,new Semaphore("Child", 0)));
 	Thread * newFork = new Thread("newFork");
-	newFork->Fork(StartForkExec, 0);
-	newFork->space = space;
+	newFork->Fork(StartForkExec, (int)newSpace);
 
-	// delete filename;
-	// delete executable; // close file
-	return 0;
+	delete executable;
+	return newSpace->pid;
 }

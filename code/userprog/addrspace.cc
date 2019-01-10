@@ -22,6 +22,8 @@
 
 #include <strings.h> /* for bzero */
 
+static int currentAddrSpaceId = 0;
+
 //----------------------------------------------------------------------
 // SwapHeader
 //      Do little endian to big endian conversion on the bytes in the
@@ -103,8 +105,7 @@ AddrSpace::AddrSpace(OpenFile *executable) {
 	// at least until we have
 	// virtual memory
 
-	DEBUG('a', "Initializing address space, num pages %d, size %d\n",
-	      numPages, size);
+	DEBUG('a', "Initializing address space, num pages %d, size %d\n", numPages, size);
 	// first, set up the translation
 	pageTable = new TranslationEntry[numPages];
 	for (i = 0; i < numPages; i++) {
@@ -143,6 +144,14 @@ AddrSpace::AddrSpace(OpenFile *executable) {
 		ReadAtVirtual(executable,noffH.initData.virtualAddr, noffH.initData.size, noffH.initData.inFileAddr,pageTable,numPages);
 	}
 
+	currentThreadId = 1;
+
+	pid = currentAddrSpaceId++;
+
+	root = NULL;
+
+	children = new std::map<int, Semaphore *>();
+
 	int nb_segments = (noffH.uninitData.size + UserStackSize) / ThreadStackSize;
 	DEBUG('a', "Initializing stack sector map with %d sectors.\n", nb_segments);
 	stackSectorMap = new BitMap(nb_segments);
@@ -153,6 +162,7 @@ AddrSpace::AddrSpace(OpenFile *executable) {
 	threads[0] = new Semaphore("AddrSpace Semaphore (Main Thread)", 0);
 	for (i=1; i<MAX_NB_THREADS; i++)
 		threads[i] = new Semaphore("AddrSpace Semaphore", 1);
+
 
 }
 

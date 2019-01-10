@@ -18,6 +18,8 @@
 #include "translate.h"
 #include "bitmap.h"
 
+#include <map>
+
 #ifdef USER_PROGRAM
 #include "synch.h"
 class Semaphore;
@@ -43,6 +45,12 @@ class AddrSpace {
 
 		Semaphore ** threads;
 		BitMap * stackSectorMap;
+
+		int currentThreadId;
+		int pid;
+		AddrSpace * root;
+
+		std::map<int, Semaphore *> * children;
 
 		unsigned int numPages; // Number of pages in the virtual address space
 

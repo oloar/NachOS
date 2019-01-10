@@ -82,7 +82,6 @@ class Thread {
 		int machineState[MachineStateSize]; // all registers except for stackTop
 
 	public:
-		int id;
 		int sectorId;
 		Thread(const char *debugName); // initialize a Thread
 		~Thread();                     // deallocate a Thread
@@ -105,6 +104,8 @@ class Thread {
 		void setStatus(ThreadStatus st) { status = st; }
 		const char *getName() { return (name); }
 		void Print() { printf("%s, ", name); }
+
+		int tid;
 
 	private:
 		// some of the private data for this class is listed above
