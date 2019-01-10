@@ -84,3 +84,33 @@ void do_MainThreadExit() {
 	// On est le dernier thread à partager cette AddrSpace, on peut donc le supprimer
 	delete currentThread->space;
 }
+
+static void StartForkExec(int data) {
+	currentThread->space->InitRegisters(); // set the initial register values
+	currentThread->space->RestoreState();
+	machine->Run();
+}
+
+
+int do_ForkExec(int addr) {
+	printf("==%p\n", currentThread->space);
+	char * filename = new char[MAX_STRING_SIZE];
+	machine->CopyStringFromMachine(addr, filename, MAX_STRING_SIZE);
+
+	OpenFile *executable = fileSystem->Open(filename);
+	AddrSpace *space;
+
+	if (executable == NULL) {
+		printf("Unable to open file %s\n", filename);
+		return -1;
+	}
+	space = new AddrSpace(executable);
+	printf("==%p\n", space);
+	Thread * newFork = new Thread("newFork");
+	newFork->Fork(StartForkExec, 0);
+	newFork->space = space;
+
+	// delete filename;
+	// delete executable; // close file
+	return 0;
+}

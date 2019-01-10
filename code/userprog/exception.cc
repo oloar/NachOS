@@ -80,7 +80,6 @@ void ExceptionHandler(ExceptionType which) {
 			if (currentThread->id == 0 /* est le main thread */)
 				do_MainThreadExit();
 			interrupt->Halt(); // Temporaire jusqu'a multi process
-			break;
 		case SC_PutChar:
 			DEBUG('e', "PutChar, initiated by user program\n");
 			do_PutChar();
@@ -169,6 +168,8 @@ void ExceptionHandler(ExceptionType which) {
 		case SC_UserConditionBroadcast:
 			DEBUG('e', "UserConditionBroadcast, initiated by user program\n");
 			do_UserConditionBroadcast();
+		case SC_ForkExec:
+			machine->WriteRegister(2, do_ForkExec(machine->ReadRegister(4)));
 			break;
 		default:
 			printf("Unexpected user MODE exception %d %d\n", which, type);

@@ -30,6 +30,7 @@ SynchDisk *synchDisk;
 #ifdef USER_PROGRAM // requires either FILESYS or FILESYS_STUB
 Machine *machine;   // user program memory and registers
 SynchConsole *synchconsole;
+FrameProvider *frameProvider;
 
 int currentMutexId = 0;
 std::map<int,Lock *> *lockMap;
@@ -159,6 +160,8 @@ void Initialize(int argc, char **argv) {
 	lockMap = new std::map<int,Lock *>();
 	semaphoreMap = new std::map<int,Semaphore *>();
 	conditionMap = new std::map<int,Condition *>();
+
+	frameProvider = new FrameProvider();
 #endif
 
 #ifdef FILESYS
@@ -189,6 +192,7 @@ void Cleanup() {
 	delete semaphoreMap;
 	delete lockMap;
 	delete synchconsole;
+	delete frameProvider;
 	delete machine;
 #endif
 

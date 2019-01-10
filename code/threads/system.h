@@ -37,6 +37,7 @@ extern Timer *timer;                // the hardware alarm clock
 #include "synchconsole.h"
 #define MAX_STRING_SIZE 256
 #define MAX_NB_THREADS 32
+#include "frameprovider.h"
 
 extern int currentMutexId;
 extern std::map<int,Lock *> *lockMap;
@@ -49,6 +50,7 @@ extern std::map<int,Condition *> *conditionMap;
 
 extern Machine *machine; // user program memory and registers
 extern SynchConsole *synchconsole;
+extern FrameProvider *frameProvider;
 #endif
 
 #ifdef FILESYS_NEEDED // FILESYS or FILESYS_STUB

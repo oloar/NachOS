@@ -51,6 +51,7 @@
 #define SC_UserConditionWait 30
 #define SC_UserConditionSignal 31
 #define SC_UserConditionBroadcast 32
+#define SC_ForkExec 33
 
 #ifdef IN_USER_MODE
 
@@ -216,6 +217,7 @@ void UserConditionDestroy(int condId);
 void UserConditionWait(int condId, int mutexId);
 void UserConditionSignal(int condId); //, int mutexId);
 void UserConditionBroadcast(int condId); // , int mutexId);
+int ForkExec(char * s);
 
 #endif // IN_USER_MODE
 
