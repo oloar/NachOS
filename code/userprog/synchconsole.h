@@ -28,7 +28,8 @@ class SynchConsole {
 
 	private:
 		Console * console;
-		Lock * lock;
+		Lock * charlock;
+		Lock * stringlock;
 };
 
 #endif // SYNCHCONSOLE_H

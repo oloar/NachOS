@@ -10,85 +10,78 @@ static void ReadAvail(int arg) { readAvail->V(); }
 static void WriteDone(int arg) { writeDone->V(); }
 
 SynchConsole::SynchConsole(char * in, char * out) {
+	console = new Console(in, out, ReadAvail, WriteDone, 0);
 	readAvail = new Semaphore("Semaphore Read Available", 0);
 	writeDone = new Semaphore("Semaphore Write Done", 0);
-	console = new Console(in, out, ReadAvail, WriteDone, 0);
-	lock = new Lock("SynchConsole Lock");
+	charlock = new Lock("SynchConsole CharLock");
+	stringlock = new Lock("SynchConsole StringLock");
 }
 
 SynchConsole::~SynchConsole() {
 	delete console;
-	delete lock;
 	delete readAvail;
 	delete writeDone;
+	delete charlock;
+	delete stringlock;
 }
 
 char SynchConsole::SynchGetChar() {
-	lock->Acquire();
+	charlock->Acquire();
 	readAvail->P();
 	char c = console->GetChar();
-	lock->Release();
+	charlock->Release();
 	return c;
 }
 
 void SynchConsole::SynchPutChar(char c) {
-	lock->Acquire();
+	charlock->Acquire();
 	console->PutChar(c);
 	writeDone->P();
-	lock->Release();
-}
-
-void SynchConsole::SynchPutInt(const int n) {
-	char *buff_string_int = (char *)malloc(MAX_STRING_SIZE * sizeof(char));
-
-	snprintf(buff_string_int, MAX_STRING_SIZE, "%d", n);
-
-	int i = 0;
-
-	while (buff_string_int[i] != '\0') {
-		SynchPutChar(buff_string_int[i]);
-		i++;
-	}
-
-	free(buff_string_int);
-}
-
-int SynchConsole::SynchGetInt() {
-	int n;
-	int i = 0;
-
-	char *buff_string_int = (char *)malloc(MAX_STRING_SIZE * sizeof(char));
-
-	do {
-		buff_string_int[i] = SynchGetChar();
-		i++;
-	} while (buff_string_int[i - 1] != EOF && buff_string_int[i - 1] != '\n' &&
-			i < n - 1);
-
-	if (buff_string_int[i - 1] == EOF)
-		buff_string_int[i - 1] = '\0';
-	else
-		buff_string_int[i] = '\0';
-
-	sscanf(buff_string_int, "%d", &n);
-
-	free(buff_string_int);
-
-	return n;
+	charlock->Release();
 }
 
 void SynchConsole::SynchPutString(char * s) {
+	stringlock->Acquire();
 	while (*s != '\0')
 		SynchPutChar(*s++);
-	SynchPutChar('\n');
+	stringlock->Release();
 }
 
 void SynchConsole::SynchGetString(char * s, int n) {
+	stringlock->Acquire();
 	int i;
-	for (i = 0; i<n - 1; i++) {
+	for (i = 0; i < n - 1; i++) {
 		char c = SynchGetChar();
 		if (c == EOF || c == '\n') break;
 		s[i] = c;
 	}
 	s[i] = '\0';
+	stringlock->Release();
+}
+
+void SynchConsole::SynchPutInt(const int n) {
+	stringlock->Acquire();
+	char buff[MAX_STRING_SIZE];
+	snprintf(buff, MAX_STRING_SIZE, "%d", n);
+	for (int i = 0; buff[i] != '\0'; i++)
+		SynchPutChar(buff[i]);
+	stringlock->Release();
+}
+
+int SynchConsole::SynchGetInt() {
+	stringlock->Acquire();
+	// Copie du code GetString pour eviter un autre verrou
+	char buffer[MAX_STRING_SIZE];
+	int i;
+	for (i = 0; i<MAX_STRING_SIZE - 1; i++) {
+		char c = SynchGetChar();
+		if (c == EOF || c == '\n') break;
+		buffer[i] = c;
+	}
+	buffer[i] = '\0';
+
+	int res = 0;
+	sscanf(buffer, "%d", &res);
+	stringlock->Release();
+	return res;
 }
