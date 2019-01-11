@@ -202,21 +202,25 @@ void UserThreadExit();
  */
 int UserThreadJoin(int tid);
 
-int UserMutexCreate();
-int UserMutexDestroy(int id);
-int UserMutexLock(int id);
-int UserMutexUnlock(int id);
+typedef int mutex_t;
+mutex_t UserMutexCreate();
+int UserMutexDestroy(mutex_t m);
+int UserMutexLock(mutex_t m);
+int UserMutexUnlock(mutex_t m);
 
-int UserSemCreate(int value);
-int UserSemDestroy(int id);
-int UserSemP(int id);
-int UserSemV(int id);
+typedef int sem_t;
+sem_t UserSemCreate(int value);
+int UserSemDestroy(sem_t s);
+int UserSemP(sem_t s);
+int UserSemV(sem_t s);
 
-int UserConditionCreate();
-void UserConditionDestroy(int condId);
-void UserConditionWait(int condId, int mutexId);
-void UserConditionSignal(int condId); //, int mutexId);
-void UserConditionBroadcast(int condId); // , int mutexId);
+typedef int cond_t;
+cond_t UserConditionCreate();
+void UserConditionDestroy(cond_t c);
+void UserConditionWait(cond_t c, mutex_t m);
+void UserConditionSignal(cond_t c); //, int mutexId);
+void UserConditionBroadcast(cond_t c); // , int mutexId);
+
 int ForkExec(char * s);
 
 #endif // IN_USER_MODE
