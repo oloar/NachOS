@@ -198,28 +198,114 @@ void UserThreadExit();
 /*
  * Wait for a thread to finish
  * @param tid : the thread to wait id
- * @result : TODO
+ * @result : 0 if successfull -1 otherwise.
  */
 int UserThreadJoin(int tid);
 
-typedef int mutex_t;
-mutex_t UserMutexCreate();
-int UserMutexDestroy(mutex_t m);
-int UserMutexLock(mutex_t m);
-int UserMutexUnlock(mutex_t m);
+/***************************
+ * Semaphore
+ **************************/
 
 typedef int sem_t;
+
+/*
+ * Create and initialize a semaphore
+ * @param value : semaphore's initial value
+ * @result : initialized sem_t
+ */
 sem_t UserSemCreate(int value);
-int UserSemDestroy(sem_t s);
+
+/*
+ * Destroy a semaphore
+ */
+void UserSemDestroy(sem_t s);
+
+/*
+ * Perform a wait on a semahore
+ * @param s : semaphore to wait on
+ * @result : 0 if successfull, 1 otherwise
+ */
 int UserSemP(sem_t s);
+
+/*
+ * Perform a post on a semahore
+ * @param s : semaphore to post to
+ * @result : 0 if successfull, 1 otherwise
+ */
 int UserSemV(sem_t s);
 
+/***************************
+ * Mutex
+ **************************/
+
+typedef int mutex_t;
+
+/*
+ * Create and initialize a mutex
+ * @result : initialized mutex_t
+ */
+mutex_t UserMutexCreate();
+
+/*
+ * Destroy a mutex
+ * @param m : mutex to destroy
+ * @result : 0 if successfull, 1 otherwise
+ */
+int UserMutexDestroy(mutex_t m);
+
+/*
+ * Lock a mutex
+ * @param m : mutex to lock
+ * @result : 0 if successfull, 1 otherwise
+ */
+int UserMutexLock(mutex_t m);
+
+/*
+ * Unlock a mutex
+ * @param m : mutex to unlock, must already be locked and own by calling thread
+ * @result : 0 if successfull, 1 otherwise
+ */
+int UserMutexUnlock(mutex_t m);
+
+/***************************
+ * Condition
+ **************************/
+
 typedef int cond_t;
+
+/*
+ * Create a condition
+ * @result : the created cond_t
+ */
 cond_t UserConditionCreate();
-void UserConditionDestroy(cond_t c);
-void UserConditionWait(cond_t c, mutex_t m);
-void UserConditionSignal(cond_t c); //, int mutexId);
-void UserConditionBroadcast(cond_t c); // , int mutexId);
+
+/*
+ * Destroy a condition
+ * @param c : condition to destroy
+ * @result : 0 if successfull, 1 otherwise
+ */
+int UserConditionDestroy(cond_t c);
+
+/*
+ * Wait on a condition
+ * @param c : condition to wait on
+ * @result : 0 if successfull, 1 otherwise
+ */
+int UserConditionWait(cond_t c, mutex_t m);
+
+/*
+ * Signal on a condition
+ * @param c : condition to signal on
+ * @result : 0 if successfull, 1 otherwise
+ */
+int UserConditionSignal(cond_t c); //, int mutexId);
+
+/*
+ * Broadcast on a condition
+ * @param c : condition to broadcast on
+ * @result : 0 if successfull, 1 otherwise
+ */
+int UserConditionBroadcast(cond_t c); // , int mutexId);
 
 int ForkExec(char * s);
 
