@@ -111,7 +111,6 @@ static void StartForkExec(int data) {
 	machine->Run();
 }
 
-
 int do_ForkExec(int addr) {
 	char filename[MAX_STRING_SIZE];
 	machine->CopyStringFromMachine(addr, filename, MAX_STRING_SIZE);
@@ -119,10 +118,8 @@ int do_ForkExec(int addr) {
 	OpenFile * executable = fileSystem->Open(filename);
 	AddrSpace * newSpace;
 
-	if (executable == NULL) {
-		printf("Unable to open file %s\n", filename);
-		return -1;
-	}
+	if (executable == NULL) return -1;
+
 	newSpace = new AddrSpace(executable);
 	newSpace->root = currentThread->space;
 	currentThread->space->children->insert(std::pair<int, Semaphore *>(newSpace->pid,new Semaphore("Child", 0)));
@@ -131,4 +128,10 @@ int do_ForkExec(int addr) {
 
 	delete executable;
 	return newSpace->pid;
+}
+
+int do_ForkWait(int pid) {
+	currentThread->space->children->find(pid)->second->P();
+	currentThread->space->children->find(pid)->second->V();
+	return 0;
 }

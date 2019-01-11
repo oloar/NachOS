@@ -14,10 +14,9 @@ void do_PutChar() {
  */
 void do_PutString() {
 	int addr = machine->ReadRegister(4);
-	char *buf = (char *) malloc(sizeof(char) * MAX_STRING_SIZE);
+	char buf[MAX_STRING_SIZE];
 	machine->CopyStringFromMachine(addr, buf, MAX_STRING_SIZE);
 	synchconsole->SynchPutString(buf);
-	free(buf);
 }
 
 /*
@@ -32,17 +31,12 @@ void do_GetChar() {
  * read a string from the console and copy it to reg4's address.
  */
 void do_GetString() {
-	char *buf;
-	char *addr = (char *) machine->ReadRegister(4);
-	int n = (int) machine->ReadRegister(5);
-	buf = (char *) malloc(sizeof(char) * MAX_STRING_SIZE);
-	synchconsole->SynchGetString(buf, n); // TODO : SynchGetString to return size
-	for (int i = 0; i < n; i++) {
-		if (buf[i] == '\0')
-			break;
-		machine->WriteMem((int)addr + i, 1, (int) buf[i]);
-	}
-	free(buf);
+	int addr = machine->ReadRegister(4);
+	int n = machine->ReadRegister(5);
+	char buf[n];
+	char * ptr = buf;
+	synchconsole->SynchGetString(buf, n);
+	while (machine->WriteMem(addr++, 1, *ptr) && *ptr++ != '\0');
 }
 
 /*
@@ -60,4 +54,3 @@ void do_GetInt() {
 	int n = synchconsole->SynchGetInt();
 	machine->WriteRegister(2, n);
 }
-

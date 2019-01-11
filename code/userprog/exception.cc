@@ -169,7 +169,12 @@ void ExceptionHandler(ExceptionType which) {
 			DEBUG('e', "UserConditionBroadcast, initiated by user program\n");
 			do_UserConditionBroadcast();
 		case SC_ForkExec:
+			DEBUG('e', "ForkExec, initiated by user program\n");
 			machine->WriteRegister(2, do_ForkExec(machine->ReadRegister(4)));
+			break;
+		case SC_ForkWait:
+			DEBUG('e', "ForkWait, initiated by user program\n");
+			machine->WriteRegister(2, do_ForkWait(machine->ReadRegister(4)));
 			break;
 		default:
 			printf("Unexpected user MODE exception %d %d\n", which, type);

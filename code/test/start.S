@@ -314,6 +314,14 @@ ForkExec:
 	j	$31
 	.end ForkExec
 
+	.globl ForkWait
+	.ent	ForkWait
+ForkWait:
+	addiu $2,$0,SC_ForkWait
+	syscall
+	j	$31
+	.end ForkWait
+
 /* dummy function to keep gcc happy */
         .globl  __main
         .ent    __main
