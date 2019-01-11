@@ -61,6 +61,8 @@ int do_UserThreadCreate(int f, int arg)  {
 }
 
 int do_UserThreadJoin(int tid) {
+	if (tid >= MAX_NB_THREADS)
+		return -1;
 	// Si thread *tid* en cours d'exécution, on attend son UserThreadExit
 	currentThread->space->threads[tid]->P();
 	// On remet la ressource pour faire marcher do_MainThreadExit()

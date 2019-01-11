@@ -2,10 +2,10 @@
 
 #define MAX_RSC 10
 
-int m;
+mutex_t m;
 int nb_ressource;
-int attente_prod;
-int attente_conso;
+cond_t attente_prod;
+cond_t attente_conso;
 
 void prod(void * arg) {
 	int i;
