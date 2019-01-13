@@ -148,6 +148,7 @@ FileSystem::FileSystem(bool format) {
 		freeMapFile = new OpenFile(FreeMapSector);
 		directoryFile = new OpenFile(DirectorySector);
 	}
+	DEBUG('f', "FileSystem initialization done.\n");
 }
 
 //----------------------------------------------------------------------
@@ -346,26 +347,65 @@ void FileSystem::Print() {
 }
 
 bool FileSystem::Mkdir(const char *name) {
-	if (!Create(name, DirectoryFileSize, DIRECTORY))
-		return false;
+	int sector;                 // Sector for the new directory
+	Directory *wdir;           // Current directory
+	Directory *newdir;         // New directory
+	OpenFile *newdir_f;        // New directory's file
+	FileHeader *newdir_h;      // New directory's header
+	BitMap *freeSectorBitMap;  // Bitmap from freeMapFile
 
 	// Obtain the current working directory
-	Directory *wddir = new Directory(NumDirEntries);
-	wddir->FetchFrom(directoryFile);
+	wdir = new Directory(NumDirEntries);
+	wdir->FetchFrom(directoryFile);
 
-	Directory *dir = new Directory(NumDirEntries);
+	if (wdir->Find(name) != -1)  {
+		DEBUG('f', "Directory \"%s\" already exist.\n", name);
+		return false;
+	}
 
-	OpenFile *dirfile = Open(name);
+	// Get sector from freeSectorMap
+	freeSectorBitMap = new BitMap(NumSectors);
+	freeSectorBitMap->FetchFrom(freeMapFile);
+	sector = freeSectorBitMap->Find();
+
+	if (sector == -1) {
+		delete freeSectorBitMap;
+		delete wdir;
+		DEBUG('f', "No free sector found to create directory %s.\n", name);
+		return false;
+	}
+	DEBUG('f', "Found sector %d for dir '%s'.\n", sector, name);
+	newdir = new Directory(sector);
+
+	newdir_h = new FileHeader;
+	if (!wdir->Add(name,sector) || !newdir_h->Allocate(freeSectorBitMap, DirectoryFileSize)) {
+		delete freeSectorBitMap;
+		delete newdir_h;
+		delete newdir;
+		delete wdir;
+		DEBUG('f', "Failed to allocate space for new directory %s.\n", name);
+		return false;
+	}
 
 	// Add the two special directory entries, . and ..
-	dir->Add(".", wddir->Find(name));
-	dir->Add("..", wddir->Find("."));
+	DEBUG('f', "Adding ('.',%d) and ('..',%d) to '%s'.\n", sector, wdir->Find("."), name);
+	newdir->Add(".", sector);
+	newdir->Add("..", wdir->Find("."));
 
-	dir->WriteBack(dirfile);
+	newdir_h->WriteBack(sector);
+	newdir_f = new OpenFile(sector);
+	newdir->WriteBack(newdir_f);
 
-	delete dirfile;
-	delete dir;
-	delete wddir;
+	// Write the changes
+	wdir->WriteBack(directoryFile);
+
+	DEBUG('f', "Directory %s successfully created on sector %d.\n", name, sector);
+
+	delete freeSectorBitMap;
+	delete newdir_h;
+	delete newdir_f;
+	delete newdir;
+	delete wdir;
 
 	return true;
 }

@@ -174,7 +174,27 @@ void PerformanceTest() {
 	stats->Print();
 }
 
+void SimpleDirectoryTest(const char *from) {
+	printf("Creating /a/\n");
+	fileSystem->Mkdir("a");
+	printf("Content of / :\n");
+	printf("Creating /b/\n");
+	fileSystem->Mkdir("b");
+	printf("Content of / :\n");
+	fileSystem->List();
+	printf("Moving into /a/\n");
+	fileSystem->Chdir("a");
+	printf("Creating /a/c/\n");
+	fileSystem->Mkdir("c");
+	printf("Content of /a :\n");
+	fileSystem->List();
+}
+
 void DirectoryTest(const char *from) {
+  // Simpler test to test FileSystem::Mkdir
+  SimpleDirectoryTest(from);
+  interrupt->Halt();
+
   printf("Creating two new directories /test1 and /test1/test2 and one file "
          "/test1/test2/TestFile:\n");
   fileSystem->Mkdir("test1");
@@ -197,4 +217,5 @@ void DirectoryTest(const char *from) {
   printf("Contents of /test1/test2/../..:\n");
   fileSystem->List();
   fileSystem->Rmdir("test1");
+  interrupt->Halt();
 }

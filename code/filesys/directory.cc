@@ -121,6 +121,7 @@ bool Directory::Add(const char *name, int newSector) {
 	if (FindIndex(name) != -1)
 		return FALSE;
 
+	DEBUG('f', "Adding file '%s' on sector %d to table.\n", name, newSector);
 	for (int i = 0; i < tableSize; i++)
 		if (!table[i].inUse) {
 			table[i].inUse = TRUE;
@@ -154,9 +155,12 @@ bool Directory::Remove(const char *name) {
 //----------------------------------------------------------------------
 
 void Directory::List() {
-	for (int i = 0; i < tableSize; i++)
-		if (table[i].inUse)
+	for (int i = 0; i < tableSize; i++) {
+		if (table[i].inUse) {
+			DEBUG('f', "Reading table[%d].\n", i);
 			printf("%s\n", table[i].name);
+		}
+	}
 }
 
 //----------------------------------------------------------------------
