@@ -392,7 +392,10 @@ bool FileSystem::Mkdir(const char *name) {
 	newdir->Add(".", sector);
 	newdir->Add("..", wdir->Find("."));
 
+	newdir_h->ChangeType(DIRECTORY);
 	newdir_h->WriteBack(sector);
+
+	freeSectorBitMap->WriteBack(freeMapFile);
 	newdir_f = new OpenFile(sector);
 	newdir->WriteBack(newdir_f);
 
@@ -466,6 +469,9 @@ bool FileSystem::Rmdir(const char *name) {
 
 	freeMap->WriteBack(freeMapFile);     // flush to disk
 	directory->WriteBack(directoryFile); // flush to disk
+
+	directory->FetchFrom(directoryFile);
+
 	delete fileHdr;
 	delete directory;
 	delete freeMap;
