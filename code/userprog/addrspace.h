@@ -25,8 +25,8 @@
 class Semaphore;
 #endif
 
-#define UserStackSize 4096 // increase this as necessary!
-#define ThreadStackSize (2 * PageSize) // thread's stack size
+#define UserStackSize (4096*2) // increase this as necessary!
+#define ThreadStackSize (8 * PageSize) // thread's stack size
 
 class AddrSpace {
 	public:
@@ -43,7 +43,6 @@ class AddrSpace {
 
 		int GetAddrFromId(int id);
 
-		Semaphore ** threads;
 		BitMap * stackSectorMap;
 
 		int currentThreadId;
@@ -51,6 +50,7 @@ class AddrSpace {
 		AddrSpace * root;
 
 		std::map<int, Semaphore *> * children;
+		std::map<int, Semaphore *> * threads;
 
 		unsigned int numPages; // Number of pages in the virtual address space
 

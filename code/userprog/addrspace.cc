@@ -157,11 +157,7 @@ AddrSpace::AddrSpace(OpenFile *executable) {
 	stackSectorMap = new BitMap(nb_segments);
 	stackSectorMap->Find(); // Mark a segment as used for the main thread
 
-	DEBUG('a', "Initializing threads' semaphores with a maximum of %d threads.\n", MAX_NB_THREADS);
-	threads = new Semaphore * [MAX_NB_THREADS];
-	threads[0] = new Semaphore("AddrSpace Semaphore (Main Thread)", 0);
-	for (i=1; i<MAX_NB_THREADS; i++)
-		threads[i] = new Semaphore("AddrSpace Semaphore", 1);
+	threads = new std::map<int, Semaphore *>();
 
 
 }

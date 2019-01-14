@@ -110,12 +110,12 @@ void ExceptionHandler(ExceptionType which) {
 			break;
 		case SC_UserThreadExit:
 			DEBUG('e', "UserThreadExit, initiated by user program\n");
-			ASSERT(currentThread->tid != 0); // Main thread doit s'arrêter avec Exit ou Halt ?
-			do_UserThreadExit();
+			if (currentThread->tid != 0)
+				do_UserThreadExit();
 			break;
 		case SC_UserThreadJoin:
 			DEBUG('e', "UserThreadJoin, initiated by user program\n");
-			do_UserThreadJoin(machine->ReadRegister(4));
+			machine->WriteRegister(2, do_UserThreadJoin(machine->ReadRegister(4)));
 			break;
 		case SC_UserMutexCreate:
 			DEBUG('e', "UserMutexCreate, initiated by user program\n");
