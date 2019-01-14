@@ -174,10 +174,13 @@ void PerformanceTest() {
 	stats->Print();
 }
 
-void SimpleDirectoryTest(const char *from) {
+
+void Mkdir_Test() {
+	printf("\n\nMkdir Test ===============================================\n");
 	printf("Creating /a/\n");
 	fileSystem->Mkdir("a");
 	printf("Content of / :\n");
+	fileSystem->List();
 	printf("Creating /b/\n");
 	fileSystem->Mkdir("b");
 	printf("Content of / :\n");
@@ -188,34 +191,74 @@ void SimpleDirectoryTest(const char *from) {
 	fileSystem->Mkdir("c");
 	printf("Content of /a :\n");
 	fileSystem->List();
+
+	printf("Cleanup...");
+	fileSystem->Rmdir("c");
+	fileSystem->Chdir("..");
+	fileSystem->Rmdir("b");
+	fileSystem->Rmdir("a");
+	printf("	Content of / :\n");
+	fileSystem->List();
+}
+
+void Rmdir_Test() {
+	printf("\n\nRmdir Test ===============================================\n");
+	printf("Creating /a/\n");
+	fileSystem->Mkdir("a");
+	printf("Content of / :\n");
+	fileSystem->List();
+	printf("Moving into /a/\n");
+	fileSystem->Chdir("a");
+	printf("Creating /a/b/\n");
+	fileSystem->Mkdir("b");
+	printf("Content of /a :\n");
+	fileSystem->List();
+	printf("Removing /a/b/\n");
+	fileSystem->Rmdir("b");
+	printf("Content of /a :\n");
+	fileSystem->List();
+	printf("Re-creating /a/b/\n");
+	fileSystem->Mkdir("b");
+	printf("Content of /a :\n");
+	fileSystem->List();
+
+	printf("Cleanup...");
+	fileSystem->Rmdir("b");
+	fileSystem->Chdir("..");
+	fileSystem->Rmdir("a");
+	printf("	Content of / :\n");
+	fileSystem->List();
+}
+
+void Orig_DirectoryTest(const char *from) {
+	printf("\n\nOriginal Test ============================================\n");
+	printf("Creating two new directories /test1 and /test1/test2 and one file "
+			"/test1/test2/TestFile:\n");
+	fileSystem->Mkdir("test1");
+	printf("Contents of /:\n");
+	fileSystem->List();
+	fileSystem->Chdir("test1");
+	fileSystem->Mkdir("test2");
+	printf("Contents of /test1:\n");
+	fileSystem->List();
+	fileSystem->Chdir("test2");
+	Copy(from, "TestFile");
+	printf("Contents of /test1/test2:\n");
+	fileSystem->List();
+	fileSystem->Remove("TestFile");
+	fileSystem->Chdir("..");
+	printf("Contents of /test1/test2/..:\n");
+	fileSystem->List();
+	fileSystem->Rmdir("test2");
+	fileSystem->Chdir("..");
+	printf("Contents of /test1/test2/../..:\n");
+	fileSystem->List();
+	fileSystem->Rmdir("test1");
 }
 
 void DirectoryTest(const char *from) {
-  // Simpler test to test FileSystem::Mkdir
-  SimpleDirectoryTest(from);
-  interrupt->Halt();
-
-  printf("Creating two new directories /test1 and /test1/test2 and one file "
-         "/test1/test2/TestFile:\n");
-  fileSystem->Mkdir("test1");
-  printf("Contents of /:\n");
-  fileSystem->List();
-  fileSystem->Chdir("test1");
-  fileSystem->Mkdir("test2");
-  printf("Contents of /test1:\n");
-  fileSystem->List();
-  fileSystem->Chdir("test2");
-  Copy(from, "TestFile");
-  printf("Contents of /test1/test2:\n");
-  fileSystem->List();
-  fileSystem->Remove("TestFile");
-  fileSystem->Chdir("..");
-  printf("Contents of /test1/test2/..:\n");
-  fileSystem->List();
-  fileSystem->Rmdir("test2");
-  fileSystem->Chdir("..");
-  printf("Contents of /test1/test2/../..:\n");
-  fileSystem->List();
-  fileSystem->Rmdir("test1");
-  interrupt->Halt();
+	Mkdir_Test();
+	Rmdir_Test();
+	Orig_DirectoryTest(from);
+	interrupt->Halt();
 }
