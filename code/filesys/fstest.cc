@@ -256,9 +256,51 @@ void Orig_DirectoryTest(const char *from) {
 	fileSystem->Rmdir("test1");
 }
 
+void Extra_Mkdir() {
+	int i, j;
+	char buff[MAX_STRING_SIZE];
+	printf("\n\nExtra Mkdir Test =========================================\n");
+	for (j = 0; j < 3; j++) {
+		printf("Reset %d ==============================================\n", j);
+		for (i = 0; i < 9; i++) {
+			printf("Creating dir %d ", i);
+			snprintf(buff, MAX_STRING_SIZE, "%d", i);
+			if (fileSystem->Mkdir(buff))
+				printf("success\n");
+			else
+				printf("failed\n");
+		}
+		for (i = 5; i < 8; i++) {
+			printf("Deleting dir %d ", i);
+			snprintf(buff, MAX_STRING_SIZE, "%d", i);
+			if (fileSystem->Rmdir(buff))
+				printf("success\n");
+			else
+				printf("failed\n");
+		}
+		for (i = 5; i < 8; i++) {
+			printf("Re-Creating dir %d ", i);
+			snprintf(buff, MAX_STRING_SIZE, "%d", i);
+			if (fileSystem->Mkdir(buff))
+				printf("success\n");
+			else
+				printf("failed\n");
+		}
+		for (i = 0; i < 8; i++) {
+			printf("Deleting dir %d ", i);
+			snprintf(buff, MAX_STRING_SIZE, "%d", i);
+			if (fileSystem->Rmdir(buff))
+				printf("success\n");
+			else
+				printf("failed\n");
+		}
+	}
+}
+
 void DirectoryTest(const char *from) {
 	Mkdir_Test();
 	Rmdir_Test();
 	Orig_DirectoryTest(from);
+	Extra_Mkdir();
 	interrupt->Halt();
 }

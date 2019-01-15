@@ -378,6 +378,7 @@ bool FileSystem::Mkdir(const char *name) {
 	newdir = new Directory(sector);
 
 	newdir_h = new FileHeader;
+	// Add new directory to working directory's table
 	if (!wdir->Add(name,sector) || !newdir_h->Allocate(freeSectorBitMap, DirectoryFileSize)) {
 		delete freeSectorBitMap;
 		delete newdir_h;
