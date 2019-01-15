@@ -85,11 +85,11 @@ USER_FLAVORS= step5 mynetwork fs
 
 #$(eval $(call define-flavor,step2,userprog filesys-stub,synchconsole.cc))
 $(eval $(call define-flavor,step5,userprog filesys-stub,\
-     synchconsole.cc userthread.cc))
+     synchconsole.cc userthread.cc userfs.cc))
 $(eval $(call define-flavor,mynetwork,userprog filesys-stub network, \
-     synchconsole.cc userthread.cc))
+     synchconsole.cc userthread.cc userfs.cc))
 $(eval $(call define-flavor,fs,userprog filesys, \
-	 synchconsole.cc userthread.cc))
+	 synchconsole.cc userthread.cc userfs.cc))
 # $(eval $(call define-flavor,step2,userprog filesys-stub,synchconsole.cc))
 # $(eval $(call define-flavor,step5,userprog filesys,\
 #     synchconsole.cc userthread.cc))

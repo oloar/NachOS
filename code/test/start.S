@@ -322,6 +322,70 @@ ForkWait:
 	j	$31
 	.end ForkWait
 
+	.globl UserMkdir
+	.ent	UserMkdir
+UserMkdir:
+	addiu $2,$0,SC_UserMkdir
+	syscall
+	j	$31
+	.end UserMkdir
+
+	.globl UserRmdir
+	.ent	UserRmdir
+UserRmdir:
+	addiu $2,$0,SC_UserRmdir
+	syscall
+	j	$31
+	.end UserRmdir
+
+	.globl UserChdir
+	.ent	UserChdir
+UserChdir:
+	addiu $2,$0,SC_UserChdir
+	syscall
+	j	$31
+	.end UserChdir
+
+	.globl UserListDir
+	.ent	UserListDir
+UserListDir:
+	addiu $2,$0,SC_UserListDir
+	syscall
+	j	$31
+	.end UserListDir
+
+	.globl UserCreate
+	.ent	UserCreate
+UserCreate:
+	addiu $2,$0,SC_UserCreate
+	syscall
+	j	$31
+	.end UserCreate
+
+	.globl UserRemove
+	.ent	UserRemove
+UserRemove:
+	addiu $2,$0,SC_UserRemove
+	syscall
+	j	$31
+	.end UserRemove
+
+	.globl UserOpen
+	.ent	UserOpen
+UserOpen:
+	addiu $2,$0,SC_UserOpen
+	syscall
+	j	$31
+	.end UserOpen
+
+	.globl UserClose
+	.ent	UserClose
+UserClose:
+	addiu $2,$0,SC_UserClose
+	syscall
+	j	$31
+	.end UserClose
+
 /* dummy function to keep gcc happy */
         .globl  __main
         .ent    __main

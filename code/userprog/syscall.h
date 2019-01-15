@@ -53,6 +53,14 @@
 #define SC_UserConditionBroadcast 32
 #define SC_ForkExec 33
 #define SC_ForkWait 34
+#define SC_UserMkdir 35
+#define SC_UserRmdir 36
+#define SC_UserChdir 37
+#define SC_UserListDir 38
+#define SC_UserCreate 39
+#define SC_UserRemove 40
+#define SC_UserOpen 41
+#define SC_UserClose 42
 
 #ifdef IN_USER_MODE
 
@@ -310,6 +318,16 @@ int UserConditionBroadcast(cond_t c); // , int mutexId);
 
 int ForkExec(char * s);
 int ForkWait(int pid);
+
+/* File system syscalls */
+int UserMkdir(char *name);
+int UserRmdir(char *name);
+int UserChdir(char *name);
+void UserListDir();
+int UserCreate(char *name, int size);
+int UserRemove(char *name);
+int UserOpen(char *name);
+int UserClose(char *name);
 
 #endif // IN_USER_MODE
 
