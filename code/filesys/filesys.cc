@@ -429,53 +429,51 @@ bool FileSystem::Chdir(const char *name) {
 }
 
 bool FileSystem::Rmdir(const char *name) {
-	Directory *directory, *rmdir;
-	BitMap *freeMap;
-	FileHeader *fileHdr;
-	int sector;
-	OpenFile *rmdirfile;
+  Directory *directory, *rmdir;
+  BitMap *freeMap;
+  FileHeader *fileHdr;
+  int sector;
+  OpenFile *rmdirfile;
 
-	directory = new Directory(NumDirEntries);
-	directory->FetchFrom(directoryFile);
-	sector = directory->Find(name);
-	if (sector == -1) {
-		delete directory;
-		return FALSE; // file not found
-	}
-	fileHdr = new FileHeader;
-	fileHdr->FetchFrom(sector);
+  directory = new Directory(NumDirEntries);
+  directory->FetchFrom(directoryFile);
+  sector = directory->Find(name);
+  if (sector == -1) {
+    delete directory;
+    return FALSE; // file not found
+  }
+  fileHdr = new FileHeader;
+  fileHdr->FetchFrom(sector);
 
-	if (fileHdr->GetType() != DIRECTORY) {
-		delete fileHdr;
-		delete directory;
-		return FALSE;
-	}
+  if (fileHdr->GetType() != DIRECTORY) {
+    delete fileHdr;
+    delete directory;
+    return FALSE;
+  }
 
-	rmdir = new Directory(NumDirEntries);
-	rmdirfile = new OpenFile(sector);
-	rmdir->FetchFrom(rmdirfile);
-	if (rmdir->NonEmptyEntries() > 2) {
-		delete rmdirfile;
-		delete rmdir;
-		delete fileHdr;
-		delete directory;
-		return FALSE;
-	}
+  rmdir = new Directory(NumDirEntries);
+  rmdirfile = new OpenFile(sector);
+  rmdir->FetchFrom(rmdirfile);
+  if (rmdir->NonEmptyEntries() > 2) {
+    delete rmdirfile;
+    delete rmdir;
+    delete fileHdr;
+    delete directory;
+    return FALSE;
+  }
 
-	freeMap = new BitMap(NumSectors);
-	freeMap->FetchFrom(freeMapFile);
+  freeMap = new BitMap(NumSectors);
+  freeMap->FetchFrom(freeMapFile);
 
-	fileHdr->Deallocate(freeMap); // remove data blocks
-	freeMap->Clear(sector);       // remove header block
-	directory->Remove(name);
+  fileHdr->Deallocate(freeMap); // remove data blocks
+  freeMap->Clear(sector);       // remove header block
+  directory->Remove(name);
 
-	freeMap->WriteBack(freeMapFile);     // flush to disk
-	directory->WriteBack(directoryFile); // flush to disk
-
-	directory->FetchFrom(directoryFile);
-
-	delete fileHdr;
-	delete directory;
-	delete freeMap;
-	return TRUE;
+  freeMap->WriteBack(freeMapFile);     // flush to disk
+  directory->WriteBack(directoryFile); // flush to disk
+  delete fileHdr;
+  delete directory;
+  delete freeMap;
+  delete rmdirfile;
+  return TRUE;
 }

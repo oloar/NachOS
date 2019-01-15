@@ -207,3 +207,12 @@ OpenFile *OpenFile::getOpenFile(int index) {
     return NULL;
   return table[index];
 }
+
+int OpenFile::numOpenFiles() {
+  int num = 0;
+  for (int i = 0; i < MAX_OPEN_FILES; i++)
+    if (table[i] != NULL)
+      num++;
+
+  return num;
+}

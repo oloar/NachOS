@@ -99,6 +99,8 @@ class OpenFile {
 
   static OpenFile *getOpenFile(int index);
 
+  static int numOpenFiles();
+
 private:
   FileHeader *hdr;  // Header for this file
   int seekPosition; // Current position within the file
