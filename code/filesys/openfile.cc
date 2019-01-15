@@ -18,6 +18,8 @@
 
 #include <strings.h> /* for bzero */
 
+OpenFile *OpenFile::table[MAX_OPEN_FILES];
+
 //----------------------------------------------------------------------
 // OpenFile::OpenFile
 // 	Open a Nachos file for reading and writing.  Bring the file header
@@ -27,9 +29,10 @@
 //----------------------------------------------------------------------
 
 OpenFile::OpenFile(int sector) {
-	hdr = new FileHeader;
-	hdr->FetchFrom(sector);
-	seekPosition = 0;
+  hdr = new FileHeader;
+  hdr->FetchFrom(sector);
+  seekPosition = 0;
+  index_in_table = storeTable();
 }
 
 //----------------------------------------------------------------------
@@ -37,7 +40,10 @@ OpenFile::OpenFile(int sector) {
 // 	Close a Nachos file, de-allocating any in-memory data structures.
 //----------------------------------------------------------------------
 
-OpenFile::~OpenFile() { delete hdr; }
+OpenFile::~OpenFile() {
+  table[index_in_table] = NULL;
+  delete hdr;
+}
 
 //----------------------------------------------------------------------
 // OpenFile::Seek
@@ -175,3 +181,29 @@ int OpenFile::WriteAt(const char *from, int numBytes, int position) {
 //----------------------------------------------------------------------
 
 int OpenFile::Length() { return hdr->FileLength(); }
+
+void OpenFile::initTable() {
+  for (int i = 0; i < MAX_OPEN_FILES; i++)
+    table[i] = NULL;
+}
+
+int OpenFile::storeTable() {
+  int i = 0;
+  while (i < MAX_OPEN_FILES && table[i] != NULL)
+    i++;
+
+  if (i >= MAX_OPEN_FILES) {
+    delete table[0];
+    i = 0;
+  }
+
+  table[i] = this;
+
+  return i;
+}
+
+OpenFile *OpenFile::getOpenFile(int index) {
+  if (index >= MAX_OPEN_FILES)
+    return NULL;
+  return table[index];
+}

@@ -145,13 +145,10 @@ FileSystem::FileSystem(bool format) {
     freeMapFile = new OpenFile(FreeMapSector);
     directoryFile = new OpenFile(DirectorySector);
   }
-  
-  // We initialize the table of open files to NULL for each entry
-  for (int i = 0; i < MAX_OPEN_FILES; i++)
-    table[i] = NULL;
 
-  index_in_table = 0;
-  DEBUG('f', "FileSystem initialization done.\n");  
+
+  OpenFile::initTable();
+  DEBUG('f', "FileSystem initialization done.\n");    
 }
 
 //----------------------------------------------------------------------
@@ -247,13 +244,6 @@ OpenFile *FileSystem::Open(const char *name) {
     openFile = new OpenFile(sector); // name was found in directory
   delete directory;
 
-  if (openFile != NULL)
-    {
-      index_in_table = (index_in_table + 1) % MAX_OPEN_FILES;
-      if (table[index_in_table] != NULL)
-	delete table[index_in_table];
-      table[index_in_table] = openFile;
-    }
   return openFile; // return NULL if not found
 }
 

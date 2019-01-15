@@ -38,8 +38,6 @@
 #include "copyright.h"
 #include "openfile.h"
 
-#define MAX_OPEN_FILES 10
-
 #ifdef FILESYS_STUB // Temporarily implement file system calls as
 // calls to UNIX, until the real file system
 // implementation is available
@@ -118,8 +116,6 @@ private:
                            // represented as a file
   OpenFile *directoryFile; // "current" directory -- list of
                            // file names, represented as a file
-  OpenFile *table[MAX_OPEN_FILES];
-  int index_in_table;
 };
 
 #endif // FILESYS

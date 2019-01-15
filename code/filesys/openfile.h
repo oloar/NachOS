@@ -23,6 +23,8 @@
 #include "copyright.h"
 #include "utility.h"
 
+#define MAX_OPEN_FILES 10
+
 #ifdef FILESYS_STUB // Temporarily implement calls to
 		    // Nachos file system as calls to UNIX!
 		    // See definitions listed under #else
@@ -93,9 +95,16 @@ class OpenFile {
 		      // than the UNIX idiom -- lseek to
 		      // end of file, tell, lseek back
 
-      private:
-	FileHeader *hdr;  // Header for this file
-	int seekPosition; // Current position within the file
+  static void initTable();
+
+  static OpenFile *getOpenFile(int index);
+
+private:
+  FileHeader *hdr;  // Header for this file
+  int seekPosition; // Current position within the file
+  static OpenFile *table[];
+  int index_in_table;
+  int storeTable();
 };
 
 #endif // FILESYS
