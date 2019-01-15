@@ -192,8 +192,8 @@ int OpenFile::storeTable() {
     i++;
 
   if (i >= MAX_OPEN_FILES) {
-    delete table[0];
-    i = 0;
+    i = 3;
+    delete table[i];
   }
 
   table[i] = this;
