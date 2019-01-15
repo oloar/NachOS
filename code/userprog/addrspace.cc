@@ -169,7 +169,7 @@ AddrSpace::AddrSpace(OpenFile *executable) {
 
 AddrSpace::~AddrSpace() {
 	delete stackSectorMap;
-	delete[] threads;
+	delete threads;
 	delete[] pageTable;
 }
 

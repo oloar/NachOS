@@ -155,3 +155,11 @@ int do_ForkWait(int pid) {
 	res->V();
 	return 0;
 }
+
+int do_GetPID() {
+	return currentThread->space->pid;
+}
+
+int do_GetPPID() {
+	return currentThread->space->root->pid;
+}

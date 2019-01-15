@@ -2,8 +2,7 @@
 
 int main() {
 	int i;
-	for (i = 0; i<12; i++) {
-		ForkExec("nthreads");
-	}
+	for (i = 0; i<45; i++)
+		ForkWait(ForkExec("getpid2"));
 	return 0;
 }

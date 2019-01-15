@@ -322,6 +322,22 @@ ForkWait:
 	j	$31
 	.end ForkWait
 
+	.globl GetPID
+	.ent	GetPID
+GetPID:
+	addiu $2,$0,SC_GetPID
+	syscall
+	j	$31
+	.end GetPID
+
+	.globl GetPPID
+	.ent	GetPPID
+GetPPID:
+	addiu $2,$0,SC_GetPPID
+	syscall
+	j	$31
+	.end GetPPID
+
 /* dummy function to keep gcc happy */
         .globl  __main
         .ent    __main

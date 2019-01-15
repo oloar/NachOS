@@ -53,6 +53,8 @@
 #define SC_UserConditionBroadcast 32
 #define SC_ForkExec 33
 #define SC_ForkWait 34
+#define SC_GetPID 35
+#define SC_GetPPID 36
 
 #ifdef IN_USER_MODE
 
@@ -310,6 +312,9 @@ int UserConditionBroadcast(cond_t c); // , int mutexId);
 
 int ForkExec(char * s);
 int ForkWait(int pid);
+
+int GetPID(void);
+int GetPPID(void);
 
 #endif // IN_USER_MODE
 

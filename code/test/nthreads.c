@@ -11,11 +11,9 @@ void func(void * arg) {
 	s[3] = '\n';
 	s[4] = '\0';
 	PutString(s);
-
 }
 
 int main() {
-
 	int i, j;
 	int s[N];
 	int tids[N];
@@ -23,18 +21,10 @@ int main() {
 		s[i] = 	i;
 		tids[i] = UserThreadCreate(func, (void *)&s[i]);
 		if (tids[i] == -1)  {
-			PutString("Cannot Create now, waiting a bit\n");
+			PutString("Cannot create now, waiting a bit\n");
 			for(j=0;j<10000;j++);
 			i--;
 		}
-	}
-
-	for (i=0; i<N; i++) {
-		PutString("tids[");
-		PutInt(i);
-		PutString("] = ");
-		PutInt(tids[i]);
-		PutChar('\n');
 	}
 	return 0;
 }

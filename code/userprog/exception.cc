@@ -176,6 +176,14 @@ void ExceptionHandler(ExceptionType which) {
 			DEBUG('e', "ForkWait, initiated by user program\n");
 			machine->WriteRegister(2, do_ForkWait(machine->ReadRegister(4)));
 			break;
+		case SC_GetPID:
+			DEBUG('e', "GetPID, initiated by user program\n");
+			machine->WriteRegister(2, do_GetPID());
+			break;
+		case SC_GetPPID:
+			DEBUG('e', "GetPPID, initiated by user program\n");
+			machine->WriteRegister(2, do_GetPPID());
+			break;
 		default:
 			printf("Unexpected user MODE exception %d %d\n", which, type);
 			ASSERT(FALSE);
