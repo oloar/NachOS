@@ -473,7 +473,7 @@ bool FileSystem::Rmdir(const char *name) {
   directory->WriteBack(directoryFile); // flush to disk
   delete fileHdr;
   delete directory;
-  delete freeMap;
   delete rmdirfile;
+  delete freeMap;
   return TRUE;
 }
