@@ -22,6 +22,7 @@
 #include "network.h"
 #include "post.h"
 #include "system.h"
+#include "network_tempo.h"
 
 // Test out message delivery, by doing the following:
 //	1. send a message to the machine with ID "farAddr", at mail box #0
@@ -66,7 +67,96 @@ void MailTest(int farAddr) {
 	printf("Got \"%s\" from %d, box %d\n", buffer, inPktHdr.from,
 	       inMailHdr.from);
 	fflush(stdout);
+	for (int i = 1; i < 5; i++)
+	{
+		postOffice->Send(outPktHdr, outMailHdr, data);
+		// Wait for the i  message from the other machine
+		postOffice->Receive(1, &inPktHdr, &inMailHdr, buffer);
+		printf("Got \"%s\" from %d, box %d\n", buffer, inPktHdr.from,
+		       inMailHdr.from);
+		fflush(stdout);
+		// Send acknowledgement to the other machine
+		postOffice->Send(outPktHdr, outMailHdr, ack);
 
-	// Then we're done!
+		postOffice->Receive(1, &inPktHdr, &inMailHdr, buffer);
+		printf("Got \"%s\" from %d, box %d\n", buffer, inPktHdr.from,
+		       inMailHdr.from);
+		fflush(stdout);
+
+	}
 	interrupt->Halt();
 }
+
+
+void RingTest(int farAddr){
+	PacketHeader outPktHdr, inPktHdr;
+	MailHeader outMailHdr, inMailHdr;
+	char buffer[MaxMailSize];
+	if (farAddr == 1)
+	{
+		char data[20] = "Hello there! nr.";
+		int next = farAddr +48;
+		data[16]=(char)next;
+		outPktHdr.to = farAddr;
+		outMailHdr.to = 0;
+		outMailHdr.from = 1;
+		outMailHdr.length = strlen(data) + 1;
+		postOffice->Send(outPktHdr, outMailHdr, data);
+
+		postOffice->Receive(0, &inPktHdr, &inMailHdr, buffer);
+		printf("Got \"%s\" from %d, box %d\n", buffer, inPktHdr.from,
+		       inMailHdr.from);
+	}else{
+		//const char *ack = "Got it!";
+		postOffice->Receive(0, &inPktHdr, &inMailHdr, buffer);
+		printf("Got \"%s\" from %d, box %d\n", buffer, inPktHdr.from,
+		       inMailHdr.from);
+		fflush(stdout);
+
+		Delay(2);
+		outPktHdr.to = farAddr;
+		outMailHdr.to = 0;
+		outMailHdr.from = 1;
+		outMailHdr.length = strlen(buffer) + 1;
+		int next = farAddr +48;
+		buffer[16]= (char)next;
+		postOffice->Send(outPktHdr, outMailHdr, buffer);
+	}
+	printf("%lld\n",  stats->totalTicks);
+	interrupt->Halt();
+
+}
+/*
+void MailTestTempo(int farAddr) {
+	PacketHeader outPktHdr, inPktHdr;
+	MailHeader outMailHdr, inMailHdr;
+	const char *data = "Hello there!";
+	const char *ack = "Got it!";
+	char buffer[MaxMailSize];
+
+	// construct packet, mail header for original message
+	// To: destination machine, mailbox 0
+	// From: our machine, reply to: mailbox 1
+	outPktHdr.to = farAddr;
+	outMailHdr.to = 0;
+	outMailHdr.from = 1;
+	outMailHdr.length = strlen(data) + 1;
+
+	// Send the first message
+	network_Tempo->Send(outPktHdr, outMailHdr, data);
+
+	// Wait for the first message from the other machine
+	network_Tempo->Receive(0, &inPktHdr, &inMailHdr, buffer);
+	printf("Got \"%s\" from %d, box %d\n", buffer, inPktHdr.from,
+	       inMailHdr.from);
+	fflush(stdout);
+
+	// Send acknowledgement to the other machine (using "reply to" mailbox
+	// in the message that just arrived
+	outPktHdr.to = inPktHdr.from;
+	outMailHdr.to = inMailHdr.from;
+	outMailHdr.length = strlen(ack) + 1;
+	network_Tempo->Send(outPktHdr, outMailHdr, ack);
+	interrupt->Halt();
+
+}*/

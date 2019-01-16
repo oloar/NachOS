@@ -65,6 +65,9 @@ extern SynchDisk *synchDisk;
 
 #ifdef NETWORK
 #include "post.h"
+#include "network_tempo.h"
+
+//extern Network_Tempo *network_Tempo;
 extern PostOffice *postOffice;
 #endif
 

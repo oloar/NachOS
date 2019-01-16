@@ -44,6 +44,8 @@ std::map<int,Condition *> *conditionMap;
 #endif
 
 #ifdef NETWORK
+//PostOffice *postOffice;
+//Network_Tempo *network_Tempo;
 PostOffice *postOffice;
 #endif
 
@@ -173,7 +175,9 @@ void Initialize(int argc, char **argv) {
 #endif
 
 #ifdef NETWORK
-	postOffice = new PostOffice(netname, rely, 10);
+	postOffice = new  PostOffice(netname, rely, 10);
+
+	//network_Tempo = new Network_Tempo(netname, rely, 10);
 #endif
 }
 
@@ -185,6 +189,7 @@ void Cleanup() {
 	printf("\nCleaning up...\n");
 #ifdef NETWORK
 	delete postOffice;
+	//delete network_Tempo;
 #endif
 
 #ifdef USER_PROGRAM
