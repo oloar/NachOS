@@ -122,7 +122,6 @@ void RingTest(int farAddr){
 		buffer[16]= (char)next;
 		postOffice->Send(outPktHdr, outMailHdr, buffer);
 	}
-	printf("%lld\n",  stats->totalTicks);
 	interrupt->Halt();
 
 }
