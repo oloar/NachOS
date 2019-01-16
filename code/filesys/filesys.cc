@@ -190,7 +190,7 @@ bool FileSystem::Create(const char *name, int initialSize, int fileType) {
 
   DEBUG('f', "Creating file %s, size %d\n", name, initialSize);
 
-  if (initialSize <= 0)
+  if (initialSize < 0)
     {
       return FALSE;
     }
