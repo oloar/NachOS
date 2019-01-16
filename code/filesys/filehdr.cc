@@ -39,15 +39,20 @@
 //----------------------------------------------------------------------
 
 bool FileHeader::Allocate(BitMap *freeMap, int fileSize) {
-	numBytes = fileSize;
-	numSectors = divRoundUp(fileSize, SectorSize);
-	if (freeMap->NumClear() < numSectors)
-		return FALSE; // not enough space
+  numBytes = fileSize;
+  numSectors = divRoundUp(fileSize, SectorSize);
+  fileType = REGULAR;
+  if (freeMap->NumClear() < numSectors)
+    return FALSE; // not enough space
 
-	for (int i = 0; i < numSectors; i++)
-		dataSectors[i] = freeMap->Find();
-	return TRUE;
+  for (int i = 0; i < numSectors; i++)
+    dataSectors[i] = freeMap->Find();
+  return TRUE;
 }
+
+void FileHeader::ChangeType(int newFileType) { fileType = newFileType; }
+
+int FileHeader::GetType() { return fileType; }
 
 //----------------------------------------------------------------------
 // FileHeader::Deallocate
@@ -57,11 +62,10 @@ bool FileHeader::Allocate(BitMap *freeMap, int fileSize) {
 //----------------------------------------------------------------------
 
 void FileHeader::Deallocate(BitMap *freeMap) {
-	for (int i = 0; i < numSectors; i++) {
-		ASSERT(
-		    freeMap->Test((int)dataSectors[i])); // ought to be marked!
-		freeMap->Clear((int)dataSectors[i]);
-	}
+  for (int i = 0; i < numSectors; i++) {
+    ASSERT(freeMap->Test((int)dataSectors[i])); // ought to be marked!
+    freeMap->Clear((int)dataSectors[i]);
+  }
 }
 
 //----------------------------------------------------------------------
@@ -72,7 +76,7 @@ void FileHeader::Deallocate(BitMap *freeMap) {
 //----------------------------------------------------------------------
 
 void FileHeader::FetchFrom(int sector) {
-	synchDisk->ReadSector(sector, (char *)this);
+  synchDisk->ReadSector(sector, (char *)this);
 }
 
 //----------------------------------------------------------------------
@@ -83,7 +87,7 @@ void FileHeader::FetchFrom(int sector) {
 //----------------------------------------------------------------------
 
 void FileHeader::WriteBack(int sector) {
-	synchDisk->WriteSector(sector, (char *)this);
+  synchDisk->WriteSector(sector, (char *)this);
 }
 
 //----------------------------------------------------------------------
@@ -97,7 +101,7 @@ void FileHeader::WriteBack(int sector) {
 //----------------------------------------------------------------------
 
 int FileHeader::ByteToSector(int offset) {
-	return (dataSectors[offset / SectorSize]);
+  return (dataSectors[offset / SectorSize]);
 }
 
 //----------------------------------------------------------------------
@@ -114,24 +118,33 @@ int FileHeader::FileLength() { return numBytes; }
 //----------------------------------------------------------------------
 
 void FileHeader::Print() {
-	int i, j, k;
-	char *data = new char[SectorSize];
+  int i, j, k;
+  char *data = new char[SectorSize];
 
-	printf("FileHeader contents.  File size: %d.  File blocks:\n",
-	       numBytes);
-	for (i = 0; i < numSectors; i++)
-		printf("%d ", dataSectors[i]);
-	printf("\nFile contents:\n");
-	for (i = k = 0; i < numSectors; i++) {
-		synchDisk->ReadSector(dataSectors[i], data);
-		for (j = 0; (j < SectorSize) && (k < numBytes); j++, k++) {
-			if ('\040' <= data[j] &&
-			    data[j] <= '\176') // isprint(data[j])
-				printf("%c", data[j]);
-			else
-				printf("\\%x", (unsigned char)data[j]);
-		}
-		printf("\n");
-	}
-	delete[] data;
+  printf("File type: ");
+  switch (fileType) {
+  case REGULAR:
+    printf("regular file\n");
+    break;
+  case DIRECTORY:
+    printf("directory\n");
+    break;
+  default:
+    printf("unknown file type\n");
+  }
+  printf("FileHeader contents.  File size: %d.  File blocks:\n", numBytes);
+  for (i = 0; i < numSectors; i++)
+    printf("%d ", dataSectors[i]);
+  printf("\nFile contents:\n");
+  for (i = k = 0; i < numSectors; i++) {
+    synchDisk->ReadSector(dataSectors[i], data);
+    for (j = 0; (j < SectorSize) && (k < numBytes); j++, k++) {
+      if ('\040' <= data[j] && data[j] <= '\176') // isprint(data[j])
+        printf("%c", data[j]);
+      else
+        printf("\\%x", (unsigned char)data[j]);
+    }
+    printf("\n");
+  }
+  delete[] data;
 }

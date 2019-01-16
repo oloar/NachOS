@@ -18,6 +18,8 @@
 
 #include <strings.h> /* for bzero */
 
+OpenFile *OpenFile::table[MAX_OPEN_FILES];
+
 //----------------------------------------------------------------------
 // OpenFile::OpenFile
 // 	Open a Nachos file for reading and writing.  Bring the file header
@@ -27,9 +29,10 @@
 //----------------------------------------------------------------------
 
 OpenFile::OpenFile(int sector) {
-	hdr = new FileHeader;
-	hdr->FetchFrom(sector);
-	seekPosition = 0;
+  hdr = new FileHeader;
+  hdr->FetchFrom(sector);
+  seekPosition = 0;
+  index_in_table = storeTable();
 }
 
 //----------------------------------------------------------------------
@@ -37,7 +40,10 @@ OpenFile::OpenFile(int sector) {
 // 	Close a Nachos file, de-allocating any in-memory data structures.
 //----------------------------------------------------------------------
 
-OpenFile::~OpenFile() { delete hdr; }
+OpenFile::~OpenFile() {
+  table[index_in_table] = NULL;
+  delete hdr;
+}
 
 //----------------------------------------------------------------------
 // OpenFile::Seek
@@ -63,15 +69,15 @@ void OpenFile::Seek(int position) { seekPosition = position; }
 //----------------------------------------------------------------------
 
 int OpenFile::Read(char *into, int numBytes) {
-	int result = ReadAt(into, numBytes, seekPosition);
-	seekPosition += result;
-	return result;
+  int result = ReadAt(into, numBytes, seekPosition);
+  seekPosition += result;
+  return result;
 }
 
 int OpenFile::Write(const char *into, int numBytes) {
-	int result = WriteAt(into, numBytes, seekPosition);
-	seekPosition += result;
-	return result;
+  int result = WriteAt(into, numBytes, seekPosition);
+  seekPosition += result;
+  return result;
 }
 
 //----------------------------------------------------------------------
@@ -101,72 +107,71 @@ int OpenFile::Write(const char *into, int numBytes) {
 //----------------------------------------------------------------------
 
 int OpenFile::ReadAt(char *into, int numBytes, int position) {
-	int fileLength = hdr->FileLength();
-	int i, firstSector, lastSector, numSectors;
-	char *buf;
+  int fileLength = hdr->FileLength();
+  int i, firstSector, lastSector, numSectors;
+  char *buf;
 
-	if ((numBytes <= 0) || (position >= fileLength))
-		return 0; // check request
-	if ((position + numBytes) > fileLength)
-		numBytes = fileLength - position;
-	DEBUG('f', "Reading %d bytes at %d, from file of length %d.\n",
-	      numBytes, position, fileLength);
+  if ((numBytes <= 0) || (position >= fileLength))
+    return 0; // check request
+  if ((position + numBytes) > fileLength)
+    numBytes = fileLength - position;
+  DEBUG('f', "Reading %d bytes at %d, from file of length %d.\n", numBytes,
+        position, fileLength);
 
-	firstSector = divRoundDown(position, SectorSize);
-	lastSector = divRoundDown(position + numBytes - 1, SectorSize);
-	numSectors = 1 + lastSector - firstSector;
+  firstSector = divRoundDown(position, SectorSize);
+  lastSector = divRoundDown(position + numBytes - 1, SectorSize);
+  numSectors = 1 + lastSector - firstSector;
 
-	// read in all the full and partial sectors that we need
-	buf = new char[numSectors * SectorSize];
-	for (i = firstSector; i <= lastSector; i++)
-		synchDisk->ReadSector(hdr->ByteToSector(i * SectorSize),
-				      &buf[(i - firstSector) * SectorSize]);
+  // read in all the full and partial sectors that we need
+  buf = new char[numSectors * SectorSize];
+  for (i = firstSector; i <= lastSector; i++)
+    synchDisk->ReadSector(hdr->ByteToSector(i * SectorSize),
+                          &buf[(i - firstSector) * SectorSize]);
 
-	// copy the part we want
-	bcopy(&buf[position - (firstSector * SectorSize)], into, numBytes);
-	delete[] buf;
-	return numBytes;
+  // copy the part we want
+  bcopy(&buf[position - (firstSector * SectorSize)], into, numBytes);
+  delete[] buf;
+  return numBytes;
 }
 
 int OpenFile::WriteAt(const char *from, int numBytes, int position) {
-	int fileLength = hdr->FileLength();
-	int i, firstSector, lastSector, numSectors;
-	bool firstAligned, lastAligned;
-	char *buf;
+  int fileLength = hdr->FileLength();
+  int i, firstSector, lastSector, numSectors;
+  bool firstAligned, lastAligned;
+  char *buf;
 
-	if ((numBytes <= 0) || (position >= fileLength))
-		return 0; // check request
-	if ((position + numBytes) > fileLength)
-		numBytes = fileLength - position;
-	DEBUG('f', "Writing %d bytes at %d, from file of length %d.\n",
-	      numBytes, position, fileLength);
+  if ((numBytes <= 0) || (position >= fileLength))
+    return 0; // check request
+  if ((position + numBytes) > fileLength)
+    numBytes = fileLength - position;
+  DEBUG('f', "Writing %d bytes at %d, from file of length %d.\n", numBytes,
+        position, fileLength);
 
-	firstSector = divRoundDown(position, SectorSize);
-	lastSector = divRoundDown(position + numBytes - 1, SectorSize);
-	numSectors = 1 + lastSector - firstSector;
+  firstSector = divRoundDown(position, SectorSize);
+  lastSector = divRoundDown(position + numBytes - 1, SectorSize);
+  numSectors = 1 + lastSector - firstSector;
 
-	buf = new char[numSectors * SectorSize];
+  buf = new char[numSectors * SectorSize];
 
-	firstAligned = (position == (firstSector * SectorSize));
-	lastAligned =
-	    ((position + numBytes) == ((lastSector + 1) * SectorSize));
+  firstAligned = (position == (firstSector * SectorSize));
+  lastAligned = ((position + numBytes) == ((lastSector + 1) * SectorSize));
 
-	// read in first and last sector, if they are to be partially modified
-	if (!firstAligned)
-		ReadAt(buf, SectorSize, firstSector * SectorSize);
-	if (!lastAligned && ((firstSector != lastSector) || firstAligned))
-		ReadAt(&buf[(lastSector - firstSector) * SectorSize],
-		       SectorSize, lastSector * SectorSize);
+  // read in first and last sector, if they are to be partially modified
+  if (!firstAligned)
+    ReadAt(buf, SectorSize, firstSector * SectorSize);
+  if (!lastAligned && ((firstSector != lastSector) || firstAligned))
+    ReadAt(&buf[(lastSector - firstSector) * SectorSize], SectorSize,
+           lastSector * SectorSize);
 
-	// copy in the bytes we want to change
-	bcopy(from, &buf[position - (firstSector * SectorSize)], numBytes);
+  // copy in the bytes we want to change
+  bcopy(from, &buf[position - (firstSector * SectorSize)], numBytes);
 
-	// write modified sectors back
-	for (i = firstSector; i <= lastSector; i++)
-		synchDisk->WriteSector(hdr->ByteToSector(i * SectorSize),
-				       &buf[(i - firstSector) * SectorSize]);
-	delete[] buf;
-	return numBytes;
+  // write modified sectors back
+  for (i = firstSector; i <= lastSector; i++)
+    synchDisk->WriteSector(hdr->ByteToSector(i * SectorSize),
+                           &buf[(i - firstSector) * SectorSize]);
+  delete[] buf;
+  return numBytes;
 }
 
 //----------------------------------------------------------------------
@@ -175,3 +180,42 @@ int OpenFile::WriteAt(const char *from, int numBytes, int position) {
 //----------------------------------------------------------------------
 
 int OpenFile::Length() { return hdr->FileLength(); }
+
+void OpenFile::initTable() {
+  for (int i = 0; i < MAX_OPEN_FILES+2; i++)
+    table[i] = NULL;
+}
+
+int OpenFile::storeTable() {
+  int i = 0;
+  while (i < MAX_OPEN_FILES+2 && table[i] != NULL)
+    i++;
+
+  if (i >= MAX_OPEN_FILES+2) {
+    return -1;
+  }
+
+  table[i] = this;
+
+  return i;
+}
+
+OpenFile *OpenFile::getOpenFile(int index) {
+  if (index >= MAX_OPEN_FILES+2)
+    return NULL;
+  return table[index];
+}
+
+int OpenFile::numOpenFiles() {
+  int num = 0;
+  for (int i = 0; i < MAX_OPEN_FILES+2; i++)
+    if (table[i] != NULL)
+      num++;
+
+  return num;
+}
+
+int OpenFile::getIndex()
+{
+  return index_in_table;
+}

@@ -11,7 +11,7 @@
 // Usage: nachos -d <debugflags> -rs <random seed #>
 //              -s -x <nachos file> -c <consoleIn> <consoleOut>
 //              -f -cp <unix file> <nachos file>
-//              -p <nachos file> -r <nachos file> -l -D -t
+//              -p <nachos file> -r <nachos file> -l -D -t -dirtest <unix file>
 //              -n <network reliability> -m <machine id>
 //              -o <other machine id>
 //              -z
@@ -33,6 +33,7 @@
 //    -l lists the contents of the Nachos directory
 //    -D prints the contents of the entire file system
 //    -t tests the performance of the Nachos file system
+//    -dirtest tests the hierarchy of directories
 //
 //  NETWORK
 //    -n sets the network reliability
@@ -57,7 +58,7 @@
 
 extern void ThreadTest(void),
     Copy(const char *unixFile, const char *nachosFile);
-extern void Print(char *file), PerformanceTest(void);
+extern void Print(char *file), PerformanceTest(void), DirectoryTest(const char *from);
 extern void StartProcess(char *file), ConsoleTest(char *in, char *out),
 		SynchConsoleTest(char *in, char *out);
 extern void MailTest(int networkID);
@@ -140,6 +141,10 @@ int main(int argc, char **argv) {
 			fileSystem->Print();
 		} else if (!strcmp(*argv, "-t")) { // performance test
 			PerformanceTest();
+		} else if (!strcmp(*argv, "-dirtest")) { // Directory Test
+			ASSERT(argc > 1);
+			DirectoryTest(*(argv + 1));
+			argCount = 2;
 		}
 #endif // FILESYS
 #ifdef NETWORK

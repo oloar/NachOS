@@ -27,6 +27,7 @@
 #include "userconsole.h"
 #include "userthread.h"
 #include "usersynch.h"
+#include "userfs.h"
 
 //----------------------------------------------------------------------
 // UpdatePC : Increments the Program Counter register in order to resume
@@ -183,6 +184,38 @@ void ExceptionHandler(ExceptionType which) {
 		case SC_GetPPID:
 			DEBUG('e', "GetPPID, initiated by user program\n");
 			machine->WriteRegister(2, do_GetPPID());
+			break;
+		case SC_UserMkdir:
+			DEBUG('e', "UserMkdir, initiated by user program\n");
+			do_UserMkdir();
+			break;
+		case SC_UserRmdir:
+			DEBUG('e', "UserRmdir, initiated by user program\n");
+			do_UserRmdir();
+			break;
+		case SC_UserChdir:
+			DEBUG('e', "UserChdir, initiated by user program\n");
+			do_UserChdir();
+			break;
+		case SC_UserListDir:
+			DEBUG('e', "UserListDir, initiated by user program\n");
+			do_UserListDir();
+			break;
+		case SC_UserCreate:
+			DEBUG('e', "UserCreate, initiated by user program\n");
+			do_UserCreate();
+			break;
+		case SC_UserRemove:
+			DEBUG('e', "UserRemove, initiated by user program\n");
+			do_UserRemove();
+			break;
+		case SC_UserOpen:
+			DEBUG('e', "UserOpen, initiated by user program\n");
+			do_UserOpen();
+			break;
+		case SC_UserClose:
+			DEBUG('e', "UserClose, initiated by user program\n");
+			do_UserClose();
 			break;
 		default:
 			printf("Unexpected user MODE exception %d %d\n", which, type);
