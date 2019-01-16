@@ -10,4 +10,5 @@ void do_UserCreate();
 void do_UserRemove();
 void do_UserOpen();
 void do_UserClose();
+void do_UserRead();
 #endif /* USERFS_H */

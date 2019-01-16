@@ -33,6 +33,9 @@ void do_UserOpen() {
 void do_UserClose() {
 	printf("UserClose\n");
 }
+void do_UserRead() {
+	printf("UserRead\n");
+}
 
 #else
 

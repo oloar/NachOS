@@ -320,13 +320,51 @@ int ForkExec(char * s);
 int ForkWait(int pid);
 
 /* File system syscalls */
+/*
+ * Create a directory at the current path
+ * @param name : name of the directory to create
+ * @result : 1 on success, 0 on error
+ */
 int UserMkdir(char *name);
+/*
+ * Remove a directory at the current path
+ * @param name : name of the directory to remove
+ * @result : 1 on success, 0 on error
+ */
 int UserRmdir(char *name);
+/*
+ * Change the working directory
+ * @param name : name of the directory to move to
+ * @result : 1 on success, 0 on error
+ */
 int UserChdir(char *name);
+/*
+ * List the working directory content
+ */
 void UserListDir();
+/*
+ * Create a file
+ * @param name : name of the file to create
+ * @param size : size of the file to create
+ * @result : 1 on success, 0 on error
+ */
 int UserCreate(char *name, int size);
+/*
+ * Remove a file
+ * @param name : name of the file to remove
+ * @result : 1 on success, 0 on error
+ */
 int UserRemove(char *name);
+/*
+ * Open a file
+ * @param name : name of the file to open
+ * @result : the file descriptor if successful, a negative value otherwise
+ */
 int UserOpen(char *name);
+/*
+ * Close a file
+ * @param fd : file descriptor of the file to close
+ */
 void UserClose(int fd);
 
 #endif // IN_USER_MODE
