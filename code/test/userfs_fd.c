@@ -16,7 +16,7 @@ int main() {
 			UserChdir("dir");
 		PutString("Creating file ");
 		PutString(names[i]);
-		created[i] = UserCreate(names[i], i);
+		created[i] = UserCreate(names[i], i+1);
 		if (created[i])
 			PutString(" succeeded.\n");
 		else

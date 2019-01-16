@@ -117,6 +117,8 @@ FileSystem::FileSystem(bool format) {
     // The file system operations assume these two files are left open
     // while Nachos is running.
 
+    OpenFile::initTable();
+    
     freeMapFile = new OpenFile(FreeMapSector);
     directoryFile = new OpenFile(DirectorySector);
 
@@ -146,7 +148,7 @@ FileSystem::FileSystem(bool format) {
     directoryFile = new OpenFile(DirectorySector);
   }
 
-  OpenFile::initTable();
+
   DEBUG('f', "FileSystem initialization done.\n");
 }
 
@@ -188,6 +190,11 @@ bool FileSystem::Create(const char *name, int initialSize, int fileType) {
 
   DEBUG('f', "Creating file %s, size %d\n", name, initialSize);
 
+  if (initialSize <= 0)
+    {
+      return FALSE;
+    }
+  
   directory = new Directory(NumDirEntries);
   directory->FetchFrom(directoryFile);
 
@@ -241,8 +248,19 @@ OpenFile *FileSystem::Open(const char *name) {
   sector = directory->Find(name);
   if (sector >= 0)
     openFile = new OpenFile(sector); // name was found in directory
+  else
+    {
+      delete directory;
+      return NULL;
+    }
+  
   delete directory;
 
+  if (openFile->getIndex() == -1)
+    {
+      delete openFile;
+      return NULL;
+    }
   return openFile; // return NULL if not found
 }
 
@@ -472,6 +490,7 @@ bool FileSystem::Rmdir(const char *name) {
 
   freeMap->WriteBack(freeMapFile);     // flush to disk
   directory->WriteBack(directoryFile); // flush to disk
+
   delete fileHdr;
   delete directory;
   delete rmdirfile;

@@ -182,18 +182,17 @@ int OpenFile::WriteAt(const char *from, int numBytes, int position) {
 int OpenFile::Length() { return hdr->FileLength(); }
 
 void OpenFile::initTable() {
-  for (int i = 0; i < MAX_OPEN_FILES; i++)
+  for (int i = 0; i < MAX_OPEN_FILES+2; i++)
     table[i] = NULL;
 }
 
 int OpenFile::storeTable() {
   int i = 0;
-  while (i < MAX_OPEN_FILES && table[i] != NULL)
+  while (i < MAX_OPEN_FILES+2 && table[i] != NULL)
     i++;
 
-  if (i >= MAX_OPEN_FILES) {
-    i = 3;
-    delete table[i];
+  if (i >= MAX_OPEN_FILES+2) {
+    return -1;
   }
 
   table[i] = this;
@@ -202,14 +201,14 @@ int OpenFile::storeTable() {
 }
 
 OpenFile *OpenFile::getOpenFile(int index) {
-  if (index >= MAX_OPEN_FILES)
+  if (index >= MAX_OPEN_FILES+2)
     return NULL;
   return table[index];
 }
 
 int OpenFile::numOpenFiles() {
   int num = 0;
-  for (int i = 0; i < MAX_OPEN_FILES; i++)
+  for (int i = 0; i < MAX_OPEN_FILES+2; i++)
     if (table[i] != NULL)
       num++;
 

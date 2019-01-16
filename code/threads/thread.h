@@ -56,8 +56,6 @@ class Lock; // HAPPY GCC
 // WATCH OUT IF THIS ISN'T BIG ENOUGH!!!!!
 #define StackSize (4 * 1024) // in words
 
-#define MAX_OPEN_FILES 10
-
 // Thread state
 enum ThreadStatus { JUST_CREATED, RUNNING, READY, BLOCKED };
 
