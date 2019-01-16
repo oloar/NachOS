@@ -1,6 +1,6 @@
 #include "syscall.h"
 
-int m;
+mutex_t m;
 void sleep() {
 	int i;
 	int limit = 100000;

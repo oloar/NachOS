@@ -36,7 +36,6 @@ extern Timer *timer;                // the hardware alarm clock
 #include "synch.h"
 #include "synchconsole.h"
 #define MAX_STRING_SIZE 256
-#define MAX_NB_THREADS 32
 #include "frameprovider.h"
 
 extern int currentMutexId;

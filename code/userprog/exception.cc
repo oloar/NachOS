@@ -110,12 +110,12 @@ void ExceptionHandler(ExceptionType which) {
 			break;
 		case SC_UserThreadExit:
 			DEBUG('e', "UserThreadExit, initiated by user program\n");
-			ASSERT(currentThread->tid != 0); // Main thread doit s'arrêter avec Exit ou Halt ?
-			do_UserThreadExit();
+			if (currentThread->tid != 0)
+				do_UserThreadExit();
 			break;
 		case SC_UserThreadJoin:
 			DEBUG('e', "UserThreadJoin, initiated by user program\n");
-			do_UserThreadJoin(machine->ReadRegister(4));
+			machine->WriteRegister(2, do_UserThreadJoin(machine->ReadRegister(4)));
 			break;
 		case SC_UserMutexCreate:
 			DEBUG('e', "UserMutexCreate, initiated by user program\n");
@@ -169,7 +169,20 @@ void ExceptionHandler(ExceptionType which) {
 			DEBUG('e', "UserConditionBroadcast, initiated by user program\n");
 			do_UserConditionBroadcast();
 		case SC_ForkExec:
+			DEBUG('e', "ForkExec, initiated by user program\n");
 			machine->WriteRegister(2, do_ForkExec(machine->ReadRegister(4)));
+			break;
+		case SC_ForkWait:
+			DEBUG('e', "ForkWait, initiated by user program\n");
+			machine->WriteRegister(2, do_ForkWait(machine->ReadRegister(4)));
+			break;
+		case SC_GetPID:
+			DEBUG('e', "GetPID, initiated by user program\n");
+			machine->WriteRegister(2, do_GetPID());
+			break;
+		case SC_GetPPID:
+			DEBUG('e', "GetPPID, initiated by user program\n");
+			machine->WriteRegister(2, do_GetPPID());
 			break;
 		default:
 			printf("Unexpected user MODE exception %d %d\n", which, type);

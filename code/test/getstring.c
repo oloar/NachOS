@@ -5,5 +5,7 @@ int main() {
 
   GetString(buff, 256);
   PutString(buff);
+  GetString(buff, 256);
+  PutString(buff);
   return 0;
 }

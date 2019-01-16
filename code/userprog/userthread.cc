@@ -34,21 +34,24 @@ int do_UserThreadCreate(int f, int arg)  {
 	newThread->tid = currentThread->space->currentThreadId++;
 
 	// Abandon de la création si on n'a atteint le maximum de threads crée
-	if (newThread->tid >= MAX_NB_THREADS)
-		return -2;
 
 	// On demande de la memoire pour le stack
 	newThread->sectorId = currentThread->space->stackSectorMap->Find();
 
 	// Abandon de la création si on n'a pas assez de memoire pour le stack du nouveau thread
-	if (newThread->sectorId == -1)
+	if (newThread->sectorId == -1) {
+		delete newThread;
+		currentThread->space->currentThreadId--;
 		return -1;
+	}
+
+	currentThread->space->threads->insert(std::pair<int, Semaphore *>(newThread->tid, new Semaphore("newThread Sem", 0)));
 
 	// Bidouille pour l'UserThreadExit implicit
 	currentThread->space->userexitaddr = machine->ReadRegister(6);
 
 	// On marque le thread id comme en cours d'exécution
-	currentThread->space->threads[newThread->tid]->P();
+	// currentThread->space->threads[newThread->tid]->P();
 
 	thread_args * args = new thread_args();
 	args->f = f;
@@ -61,17 +64,28 @@ int do_UserThreadCreate(int f, int arg)  {
 }
 
 int do_UserThreadJoin(int tid) {
+	// On fini si le tid est invalide (n'existe pas dans le systeme);
+	if (!currentThread->space->threads->count(tid)) return -1;
+
+	Semaphore * sem = currentThread->space->threads->find(tid)->second;
+	sem->P();
+	sem->V();
+	return 0;
+	// On arrete si le tid est invalide
 	// Si thread *tid* en cours d'exécution, on attend son UserThreadExit
-	currentThread->space->threads[tid]->P();
+	// currentThread->space->threads[tid]->P();
+	// currentThread->space->threads->find(tid)->second->P();
 	// On remet la ressource pour faire marcher do_MainThreadExit()
-	currentThread->space->threads[tid]->V();
+	// currentThread->space->threads[tid]->V();
+	// currentThread->space->threads->find(tid)->second->V();
 	return 0;
 }
 
 void do_UserThreadExit() {
 	DEBUG('t', "Exiting user thread %d with sector %d.\n", currentThread->tid, currentThread->sectorId);
 	// On marque la fin de l'exécution
-	currentThread->space->threads[currentThread->tid]->V();
+	// currentThread->space->threads[currentThread->tid]->V();
+	currentThread->space->threads->find(currentThread->tid)->second->V();
 	// On rend le mémoire du stack
 	currentThread->space->stackSectorMap->Clear(currentThread->sectorId);
 
@@ -81,11 +95,14 @@ void do_UserThreadExit() {
 void do_MainThreadExit() {
 	DEBUG('t', "Exiting main thread 0 with sector %d.\n", currentThread->sectorId);
 	// On attend les autres threads de l'AddrSpace
-	for (int i=1; i<MAX_NB_THREADS; i++)
-		currentThread->space->threads[i]->P();
+	// for (int i=1; i<MAX_NB_THREADS; i++)
+		// currentThread->space->threads[i]->P();
+	std::map<int, Semaphore *>::iterator it;
+	for (it = currentThread->space->threads->begin(); it != currentThread->space->threads->end(); it++) {
+		it->second->P();
+	}
 
 	// On attend les processus fils
-	std::map<int, Semaphore *>::iterator it;
 	for (it = currentThread->space->children->begin(); it != currentThread->space->children->end(); it++) {
 		it->second->P();
 	}
@@ -111,7 +128,6 @@ static void StartForkExec(int data) {
 	machine->Run();
 }
 
-
 int do_ForkExec(int addr) {
 	char filename[MAX_STRING_SIZE];
 	machine->CopyStringFromMachine(addr, filename, MAX_STRING_SIZE);
@@ -119,10 +135,8 @@ int do_ForkExec(int addr) {
 	OpenFile * executable = fileSystem->Open(filename);
 	AddrSpace * newSpace;
 
-	if (executable == NULL) {
-		printf("Unable to open file %s\n", filename);
-		return -1;
-	}
+	if (executable == NULL) return -1;
+
 	newSpace = new AddrSpace(executable);
 	newSpace->root = currentThread->space;
 	currentThread->space->children->insert(std::pair<int, Semaphore *>(newSpace->pid,new Semaphore("Child", 0)));
@@ -131,4 +145,21 @@ int do_ForkExec(int addr) {
 
 	delete executable;
 	return newSpace->pid;
+}
+
+int do_ForkWait(int pid) {
+	Semaphore * res = currentThread->space->children->find(pid)->second;
+	if (res == currentThread->space->children->end()->second)
+		return -1;
+	res->P();
+	res->V();
+	return 0;
+}
+
+int do_GetPID() {
+	return currentThread->space->pid;
+}
+
+int do_GetPPID() {
+	return currentThread->space->root->pid;
 }

@@ -1,6 +1,6 @@
 #include "syscall.h"
 
-int sem;
+sem_t sem;
 void sleep() {
 	int i;
 	int limit = 104857;
