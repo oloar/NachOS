@@ -45,6 +45,8 @@ Thread::Thread(const char *threadName) {
 	// user threads.
 	for (int r = NumGPRegs; r < NumTotalRegs; r++)
 		userRegisters[r] = 0;
+	for (int i = 0; i < MAX_OPEN_FILES; i++)
+	  table[i] = -1;
 #endif
 }
 
@@ -374,5 +376,31 @@ void Thread::SaveUserState() {
 void Thread::RestoreUserState() {
 	for (int i = 0; i < NumTotalRegs; i++)
 		machine->WriteRegister(i, userRegisters[i]);
+}
+
+int Thread::storeTable(int fd)
+{
+  int i = 0;
+  while (i < MAX_OPEN_FILES && table[i] != -1)
+    i++;
+
+  if (i >= MAX_OPEN_FILES)
+    {
+      return -1;
+    }
+
+  table[i] = fd;
+
+  return i;
+}
+
+int Thread::getTable(int fd_th)
+{
+  return table[fd_th];
+}
+
+void Thread::setTable(int fd_th, int fd)
+{
+  table[fd_th] = fd;
 }
 #endif

@@ -215,3 +215,8 @@ int OpenFile::numOpenFiles() {
 
   return num;
 }
+
+int OpenFile::getIndex()
+{
+  return index_in_table;
+}

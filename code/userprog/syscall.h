@@ -327,7 +327,7 @@ void UserListDir();
 int UserCreate(char *name, int size);
 int UserRemove(char *name);
 int UserOpen(char *name);
-int UserClose(char *name);
+void UserClose(int fd);
 
 #endif // IN_USER_MODE
 

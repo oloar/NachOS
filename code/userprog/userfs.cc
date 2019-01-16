@@ -69,15 +69,13 @@ void do_UserListDir() {
 
 void do_UserCreate() {
 	int filenameAddr,
-		size,
-		type;
+	  size;
 	char name[MAX_STRING_SIZE];
 
 	filenameAddr = machine->ReadRegister(4);
 	size = machine->ReadRegister(5);
-	type = machine->ReadRegister(6);
 	machine->CopyStringFromMachine(filenameAddr, name, MAX_STRING_SIZE);
-	machine->WriteRegister(2, fileSystem->Create(name, size, type));
+	machine->WriteRegister(2, fileSystem->Create(name, size, 0));
 }
 
 void do_UserRemove() {
@@ -92,23 +90,33 @@ void do_UserRemove() {
 void do_UserOpen() {
 	int filenameAddr;
 	char name[MAX_STRING_SIZE];
-
+	OpenFile *f;
+	int fd;
+	
 	filenameAddr = machine->ReadRegister(4);
 	machine->CopyStringFromMachine(filenameAddr, name, MAX_STRING_SIZE);
-	// TODO : return int to user
-	// machine->WriteRegister(2, fileSystem->Open(name));
-	machine->WriteRegister(2, 1);
+	f = fileSystem->Open(name);
+	if (f == NULL)
+	  machine->WriteRegister(2, -1);
+	else
+	  {
+	    fd = f->getIndex();
+	    int fd_th = currentThread->storeTable(fd);
+	    machine->WriteRegister(2, fd_th);
+	  }
 }
 
 void do_UserClose() {
-	int filenameAddr;
-	char name[MAX_STRING_SIZE];
+  int fd_th;
 
-	filenameAddr = machine->ReadRegister(4);
-	machine->CopyStringFromMachine(filenameAddr, name, MAX_STRING_SIZE);
+	fd_th = machine->ReadRegister(4);
+	if (currentThread->getTable(fd_th) != -1)
+	  {
+	    delete OpenFile::getOpenFile(currentThread->getTable(fd_th));
+	    currentThread->setTable(fd_th, -1);
+	  }
 	// TODO : conversion name to int id
 	// machine->WriteRegister(2, fileSystem->Close(name));
-	machine->WriteRegister(2, 1);
 }
 
 #endif

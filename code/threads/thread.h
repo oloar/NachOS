@@ -56,6 +56,8 @@ class Lock; // HAPPY GCC
 // WATCH OUT IF THIS ISN'T BIG ENOUGH!!!!!
 #define StackSize (4 * 1024) // in words
 
+#define MAX_OPEN_FILES 10
+
 // Thread state
 enum ThreadStatus { JUST_CREATED, RUNNING, READY, BLOCKED };
 
@@ -132,6 +134,11 @@ class Thread {
 		void RestoreUserState(); // restore user-level register state
 
 		AddrSpace *space; // User code this thread is running.
+  int storeTable(int fd);
+  int getTable(int fd_th);
+  void setTable(int fd_th, int fd);
+private:
+  int table[MAX_OPEN_FILES];
 #endif
 };
 
