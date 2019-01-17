@@ -1,39 +1,22 @@
 #include "syscall.h"
 
 void func(void * arg) {
-	PutChar(*(char *)arg);
-	PutChar('\n');
+	char * debut = "Debut du thread X\n";
+	debut[16] = (*(char *)arg);
+	PutString(debut);
+	int i;
+	for (i = 0; i<210000; i++);
+	char * fin = "Fin du thread X\n";
+	fin[14] = (*(char *)arg);
+	PutString(fin);
 }
 
-void func2(void * arg) {
-	PutChar(*(char *)arg);
-	PutChar('\n');
-	PutString("5");
-	PutString("5");
-	PutString("5");
-	PutString("5");
-	PutString("5");
-	PutString("5");
-	PutString("5");
-	PutString("5");
-	PutString("5");
-	PutString("5");
-	PutString("5");
-	PutString("5");
-	PutString("5");
-}
 
 int main() {
-	PutString("5");
-	char arg = 'A';
-	char arg2 = 'B';
-	UserThreadCreate(func, (void *)&arg);
-	UserThreadCreate(func2, (void *)&arg2);
-	PutString("4");
-	PutString("3");
-	PutString("2");
-	PutString("1");
-	PutString("0");
-	PutString("BOOM");
+	char arg1 = '1';
+	char arg2 = '2';
+	UserThreadCreate(func, (void *)&arg1);
+	UserThreadCreate(func, (void *)&arg2);
+	PutString("Tentative de terminaison du main thread\n");
 	return 0;
 }
