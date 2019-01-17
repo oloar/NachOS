@@ -14,13 +14,7 @@ int main() {
 	for (i = 0; i < 15; i++) {
 		if(i == 7)
 			UserChdir("dir");
-		PutString("Creating file ");
-		PutString(names[i]);
 		created[i] = UserCreate(names[i], i);
-		if (created[i])
-			PutString(" succeeded.\n");
-		else
-			PutString(" failed.\n");
 	}
 	UserChdir("..");
 	
@@ -31,9 +25,9 @@ int main() {
 		PutString(names[i]);
 		PutString(" , it should ");
 		if (i < 10)
-			PutString("succeed ");
+			PutString("succeed");
 		else
-			PutString("fail ");
+			PutString("fail");
 		fds[i] = UserOpen(names[i]);
 		PutString(". Results : ");
 		if (fds[i] == -1)
@@ -82,25 +76,14 @@ int main() {
 
 	UserChdir("..");
 
-	PutString("Cleanup... \n");
 	for (i = 0; i < 15; i++) {
 		if(i == 7)
 			UserChdir("dir");
-		PutString("Removing file ");
-		PutString(names[i]);
-		PutChar('\n');
-		// if (created[i])
-			UserRemove(names[i]);
+		UserRemove(names[i]);
 	}
-	PutString("Content of /test/dir/ :\n");
-	UserListDir();
 	UserChdir("..");
 	UserRmdir("dir");
-	PutString("Content of /test/ :\n");
-	UserListDir();
 	UserChdir("..");
 	UserRmdir("test");
-	PutString("Content of / :\n");
-	UserListDir();
 	return 0;
 }

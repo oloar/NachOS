@@ -10,14 +10,17 @@ void sleep() {
 
 void func(void * arg) {
 	UserSemP(sem);
+	PutChar(*(char *) arg);
+	PutString(" took the ressource.\n");
 	sleep();
+	PutChar(*(char *) arg);
+	PutString(" put the ressource.\n");
 	UserSemV(sem);
-	UserThreadExit();
 }
 
 
 int main(void) {
-	sem = UserSemCreate(2);
+	sem = UserSemCreate(3);
 	int i,
 		tids[4] = {0,0,0,0};
 	char args[] = {'A','B','C','D'};
