@@ -15,8 +15,8 @@ void prod(void * arg) {
 			UserConditionWait(attente_prod, m);
 		nb_ressource++;
 
-		PutString("Prod ");
 		PutChar(*(char *) arg);
+		PutString(" put a ressource raising the stack at  ");
 		PutInt(nb_ressource);
 		PutChar('\n');
 
@@ -33,8 +33,8 @@ void conso(void * arg) {
 			UserConditionWait(attente_conso,m);
 		nb_ressource--;
 
-		PutString("Conso ");
 		PutChar(*(char *) arg);
+		PutString(" took a ressource leaving the stack at ");
 		PutInt(nb_ressource);
 		PutChar('\n');
 
